@@ -1,0 +1,157 @@
+<div>
+                                    <FormField
+                                        control={form.control}
+                                        name="items_perusahaan"
+                                        render={() => (
+                                            <FormItem>
+                                                <FormField
+                                                    control={form.control}
+                                                    name="items_estate"
+                                                    render={() => (
+                                                        <FormItem>
+                                                            <FormField
+                                                                control={form.control}
+                                                                name="items_divisi"
+                                                                render={() => (
+                                                                    <FormItem>
+                                                                        <div className="mb-4">
+                                                                            <FormLabel className="text-base">Select Data</FormLabel>
+                                                                            <FormDescription>Select data you want to show</FormDescription>
+                                                                        </div>
+                                                                        <ScrollArea className="h-52">
+                                                                            {
+                                                                                perusahaan.map((perusahaan, index) => (
+                                                                                    <Accordion key={perusahaan.id} type="multiple" className="w-full max-w-lg">
+                                                                                        <AccordionItem value={`item-${index}`} className="border-b-0">
+                                                                                            <AccordionTrigger>{perusahaan.description}</AccordionTrigger>
+                                                                                            <AccordionContent>
+                                                                                                <FormField
+                                                                                                    key={perusahaan.id}
+                                                                                                    control={form.control}
+                                                                                                    name="items_perusahaan"
+                                                                                                    render={({ field }) => {
+                                                                                                        return (
+                                                                                                            <FormItem key={perusahaan.id} className="flex items-center space-x-2">
+                                                                                                                <FormControl>
+                                                                                                                    <Checkbox
+                                                                                                                        checked={field.value?.includes(perusahaan.kode)}
+                                                                                                                        onCheckedChange={(checked) => {
+                                                                                                                            if (checked) {
+                                                                                                                                field.onChange([...field.value, perusahaan.kode])
+                                                                                                                            }
+                                                                                                                            else {
+                                                                                                                                field.onChange(
+                                                                                                                                    field.value?.filter(
+                                                                                                                                        (value) => value !== perusahaan.kode
+                                                                                                                                    )
+                                                                                                                                )
+                                                                                                                            }
+                                                                                                                        }}
+                                                                                                                    />
+                                                                                                                </FormControl>
+                                                                                                                <FormLabel>Show {perusahaan.kode}</FormLabel>
+                                                                                                            </FormItem>
+                                                                                                        )
+                                                                                                    }}
+                                                                                                >
+
+                                                                                                </FormField>
+                                                                                                {/* {
+                                                                                                    perusahaan.estates.map((estate, index) => (
+                                                                                                        <Accordion key={estate.id} type="multiple" className="pl-6 w-full max-w-lg">
+                                                                                                            <AccordionItem value={`item-${index}`} className="border-b-0">
+                                                                                                                <AccordionTrigger>{estate.description}</AccordionTrigger>
+                                                                                                                <AccordionContent>
+                                                                                                                    <FormField
+                                                                                                                        key={estate.id}
+                                                                                                                        control={form.control}
+                                                                                                                        name="items_estate"
+                                                                                                                        render={({ field }) => {
+                                                                                                                            return (
+                                                                                                                                <FormItem key={estate.id} className="flex items-center space-x-2">
+                                                                                                                                    <FormControl>
+                                                                                                                                        <Checkbox
+                                                                                                                                            checked={field.value?.includes(estate.kode)}
+                                                                                                                                            onCheckedChange={(checked) => {
+                                                                                                                                                return checked
+                                                                                                                                                    ? field.onChange([...field.value, estate.kode])
+                                                                                                                                                    : field.onChange(
+                                                                                                                                                        field.value?.filter(
+                                                                                                                                                            (value) => value !== estate.kode
+                                                                                                                                                        )
+                                                                                                                                                    )
+                                                                                                                                            }}
+                                                                                                                                        />
+                                                                                                                                    </FormControl>
+                                                                                                                                    <FormLabel>Show {estate.kode}</FormLabel>
+                                                                                                                                </FormItem>
+                                                                                                                            )
+                                                                                                                        }}
+                                                                                                                    >
+
+                                                                                                                    </FormField>
+                                                                                                                    {
+                                                                                                                        estate.divisis.map((divisi, index) => (
+                                                                                                                            <FormField
+                                                                                                                                key={divisi.id}
+                                                                                                                                control={form.control}
+                                                                                                                                name="items_divisi"
+                                                                                                                                render={({ field }) => {
+                                                                                                                                    return (
+                                                                                                                                        <FormItem key={divisi.id} className="flex items-center space-x-2">
+                                                                                                                                            <FormControl>
+                                                                                                                                                <Checkbox
+                                                                                                                                                    checked={field.value?.includes(divisi.kode)}
+                                                                                                                                                    onCheckedChange={(checked) => {
+                                                                                                                                                        return checked
+                                                                                                                                                            ? field.onChange([...field.value, divisi.kode])
+                                                                                                                                                            : field.onChange(
+                                                                                                                                                                field.value?.filter(
+                                                                                                                                                                    (value) => value !== divisi.kode
+                                                                                                                                                                )
+                                                                                                                                                            )
+                                                                                                                                                    }}
+                                                                                                                                                />
+                                                                                                                                            </FormControl>
+                                                                                                                                            <FormLabel>Show {divisi.kode}</FormLabel>
+                                                                                                                                        </FormItem>
+                                                                                                                                    )
+                                                                                                                                }}
+                                                                                                                            ></FormField>
+                                                                                                                            // <div key={divisi.id} className="flex items-center pl-6 space-x-2 space-y-2">
+                                                                                                                            //     <Checkbox id={divisi.kode} />
+                                                                                                                            //     <label htmlFor={divisi.kode} className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                                                                                                                            //         Show {divisi.kode}
+                                                                                                                            //     </label>
+                                                                                                                            // </div>
+                                                                                                                        ))
+                                                                                                                    }
+                                                                                                                </AccordionContent>
+                                                                                                            </AccordionItem>
+                                                                                                        </Accordion>
+                                                                                                    ))
+                                                                                                } */}
+                                                                                            </AccordionContent>
+                                                                                        </AccordionItem>
+                                                                                    </Accordion>
+                                                                                ))
+                                                                            }
+                                                                        </ScrollArea>
+                                                                        <FormMessage />
+                                                                    </FormItem>
+                                                                )}
+                                                            >
+                                                            </FormField>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                >
+
+                                                </FormField>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    >
+
+                                    </FormField>
+                                </div>

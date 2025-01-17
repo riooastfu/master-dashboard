@@ -1,0 +1,96 @@
+import { create } from 'zustand';
+import axios from 'axios';
+import L from 'leaflet';
+
+type MapStore = {
+    styleColor: string;
+    geoJsonLayerRef: L.GeoJSON | null;
+    setStyleColor: (color: string) => void;
+    setLayerRef: (ref: L.GeoJSON | null) => void;
+    updateLayerStyle: (percentage: number) => void;
+    fetchPercentageData: (blockCode: string, tglAwal: string, tglAkhir: string) => Promise<void>;
+    updateFeatures: () => void;
+    setUpdateFeatures: (fn: () => void) => void;
+    updateStyles: (() => void) | null;
+    setUpdateStyles: (fn: () => void) => void;
+};
+
+export const useMapStore = create<MapStore>((set, get) => ({
+    geoJsonLayerRef: null,
+    setLayerRef: (ref) => set({ geoJsonLayerRef: ref }),
+    styleColor: 'blue',
+    setStyleColor: (color) => set({ styleColor: color }),
+    updateLayerStyle: (percentage) => {
+        const ref = get().geoJsonLayerRef;
+        if (ref) {
+            let fillColor = '#ffffff';
+            if (percentage <= 80) fillColor = '#f55142';
+            else if (percentage > 80 && percentage <= 90) fillColor = '#f752b0';
+
+            ref.setStyle({
+                color: 'black',
+                weight: 1,
+                opacity: 1,
+                fillOpacity: 0.5,
+                fillColor,
+            });
+        }
+    },
+
+    fetchPercentageData: async (blockCode, tglAwal, tglAkhir) => {
+        try {
+            const response = await axios.post(`${process.env.NEXT_PUBLIC_BASE_URL}/api/produksi/budget`, {
+                fullBlockCode: '0601.01.Q41',
+                tglAwal: '201301',
+                tglAkhir: '201301'
+            });
+            const percentage = response.data?.percentage;
+            console.log("halo, ", percentage)
+            get().updateLayerStyle(percentage);
+        } catch (error) {
+            console.error('Error fetching percentage data:', error);
+        }
+    },
+    updateFeatures: () => { },
+    setUpdateFeatures: (fn) => set({ updateFeatures: fn }),
+    updateStyles: null,
+    setUpdateStyles: (fn) => set({ updateStyles: fn }),
+}));
+
+// export const useMapStore = create<MapStore>((set, get) => ({
+//     geoJsonLayerRef: null,
+//     setLayerRef: (ref) => set({ geoJsonLayerRef: ref }),
+//     styleColor: 'blue',
+//     setStyleColor: (color) => set({ styleColor: color }),
+//     updateLayerStyle: (percentage) => {
+//         const ref = get().geoJsonLayerRef;
+//         if (ref) {
+//             let fillColor = '#ffffff';
+//             if (percentage <= 80) fillColor = '#f55142';
+//             else if (percentage > 80 && percentage <= 90) fillColor = '#f752b0';
+
+//             ref.setStyle({
+//                 color: 'black',
+//                 weight: 1,
+//                 opacity: 1,
+//                 fillOpacity: 0.5,
+//                 fillColor,
+//             });
+//         }
+//     },
+
+//     fetchPercentageData: async (blockCode, tglAwal, tglAkhir) => {
+//         try {
+//             const response = await axios.post(`${process.env.NEXT_PUBLIC_BASE_URL}/api/produksi/budget`, {
+//                 fullBlockCode: '0601.01.Q41',
+//                 tglAwal: '201301',
+//                 tglAkhir: '201301'
+//             });
+//             const percentage = response.data?.percentage;
+//             console.log("halo, ", percentage)
+//             get().updateLayerStyle(percentage);
+//         } catch (error) {
+//             console.error('Error fetching percentage data:', error);
+//         }
+//     },
+// }));
