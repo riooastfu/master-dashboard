@@ -67,3 +67,19 @@ export const userManagementFormSchema = z.object({
     message: "Passwords don't match",
     path: ["confirmPassword"],
 });
+
+export const roleManagementFormSchema = z.object({
+    role: z.string().min(1, "Role name is required"),
+    description: z.string().min(1, "Description is required"),
+    created_by: z.string()
+})
+
+// Form schema for navigation menu
+export const navManagementFormSchema = z.object({
+    title: z.string().min(1, "Title is required"),
+    url: z.string().min(1, "URL is required"),
+    parent_menu_id: z.string().optional(),
+    icon: z.string().optional(),
+    mode: z.enum(["title", "subtitle", "click"]),
+    menu: z.enum(["admin", "gis", "pastiplant"]),
+})

@@ -1,3 +1,4 @@
+// components/datatable/data-table.tsx
 import {
     ColumnDef,
     ColumnFiltersState,
@@ -22,56 +23,28 @@ import {
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
-    DropdownMenu,
-    DropdownMenuCheckboxItem,
-    DropdownMenuContent,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { ChevronDown } from "lucide-react"
-import { DataTableMeta } from "./columns"
-import { DeleteDialog } from "./delete-dialog"
-import { UserProps } from "@/types"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
 
-interface DataTableProps {
-    columns: ColumnDef<UserProps, any>[]
-    data: UserProps[]
-    onEdit: (user: UserProps) => void
-    onDelete: (id: string) => void
+interface DataTableProps<TData, TValue> {
+    columns: ColumnDef<TData, TValue>[]
+    data: TData[]
+    onAssignRoles?: (record: TData) => void
 }
 
-export function DataTable({
+export function DataTable<TData, TValue>({
     columns,
     data,
-    onEdit,
-    onDelete,
-}: DataTableProps) {
+    onAssignRoles,
+}: DataTableProps<TData, TValue>) {
     const [sorting, setSorting] = useState<SortingState>([])
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
     const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
     const [rowSelection, setRowSelection] = useState({})
-    const [deleteDialog, setDeleteDialog] = useState<{
-        isOpen: boolean
-        userId?: string
-        username?: string
-    }>({
-        isOpen: false
-    })
-
-    const handleDeleteClick = (userId: string, username: string) => {
-        setDeleteDialog({
-            isOpen: true,
-            userId,
-            username
-        })
-    }
-
-    const handleDeleteConfirm = () => {
-        if (deleteDialog.userId) {
-            onDelete(deleteDialog.userId)
-        }
-        setDeleteDialog({ isOpen: false })
-    }
 
     const table = useReactTable({
         data,
@@ -91,9 +64,8 @@ export function DataTable({
             rowSelection,
         },
         meta: {
-            onEdit,
-            onDelete: (userId: string, username: string) => handleDeleteClick(userId, username),
-        } as DataTableMeta,
+            onAssignRoles,
+        },
     })
 
     // Generate page numbers array
@@ -102,10 +74,8 @@ export function DataTable({
     let pages = []
 
     if (pageCount <= 7) {
-        // If 7 or fewer pages, show all page numbers
         pages = Array.from({ length: pageCount }, (_, i) => i + 1)
     } else {
-        // Complex logic for many pages
         if (currentPage <= 4) {
             pages = [1, 2, 3, 4, 5, '...', pageCount]
         } else if (currentPage >= pageCount - 3) {
@@ -117,15 +87,8 @@ export function DataTable({
 
     return (
         <div>
-            <DeleteDialog
-                isOpen={deleteDialog.isOpen}
-                onClose={() => setDeleteDialog({ isOpen: false })}
-                onConfirm={handleDeleteConfirm}
-                username={deleteDialog.username || ""}
-            />
-
             <div className="flex items-center justify-between py-4">
-                <div className="flex items-center gap-2">
+                <div className="flex gap-2">
                     <Input
                         placeholder="Filter by username..."
                         value={(table.getColumn("username")?.getFilterValue() as string) ?? ""}
@@ -134,32 +97,14 @@ export function DataTable({
                         }
                         className="max-w-sm"
                     />
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="outline" className="ml-auto">
-                                Columns <ChevronDown className="ml-2 h-4 w-4" />
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            {table
-                                .getAllColumns()
-                                .filter((column) => column.getCanHide())
-                                .map((column) => {
-                                    return (
-                                        <DropdownMenuCheckboxItem
-                                            key={column.id}
-                                            className="capitalize"
-                                            checked={column.getIsVisible()}
-                                            onCheckedChange={(value) =>
-                                                column.toggleVisibility(!!value)
-                                            }
-                                        >
-                                            {column.id}
-                                        </DropdownMenuCheckboxItem>
-                                    )
-                                })}
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                    <Input
+                        placeholder="Filter by employee ID..."
+                        value={(table.getColumn("employid")?.getFilterValue() as string) ?? ""}
+                        onChange={(event) =>
+                            table.getColumn("employid")?.setFilterValue(event.target.value)
+                        }
+                        className="max-w-sm"
+                    />
                 </div>
                 <div className="flex items-center gap-2">
                     <p className="text-sm font-medium">Rows per page</p>
@@ -231,6 +176,7 @@ export function DataTable({
                     </TableBody>
                 </Table>
             </div>
+
             <div className="flex items-center justify-between py-4">
                 <div className="flex-1 text-sm text-muted-foreground">
                     {table.getFilteredRowModel().rows.length} row(s) total.

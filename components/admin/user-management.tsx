@@ -1,10 +1,8 @@
 "use client"
 
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import useAxiosAuth from "@/hooks/use-axios-auth";
 import { Pencil, Plus, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -13,21 +11,16 @@ import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { userManagementFormSchema } from "@/schemas";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue, } from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { DataTable } from "@/components/datatable/adminusertable/data-table";
 import { columns } from "@/components/datatable/adminusertable/columns";
+import { createUser, deleteUser, getPerusahaan, getUsers, updateUser } from "@/actions/admin/user";
+import { useRouter } from "next/navigation";
+import { UserProps } from "@/types";
 
-interface User {
-    id: number;
-    employid: number;
-    username: string;
-    perusahaanId: string;
-    perusahaan: string;
-    estateId: string;
-    estate: string;
-    divisiId: string;
-    divisi: string;
-    roles: string;
+interface Props {
+    initialUsers: UserProps[]
+    initialPerusahaan: Perusahaan[]
 }
 
 interface Perusahaan {
@@ -46,30 +39,16 @@ interface Perusahaan {
     }>;
 }
 
-interface Roles {
-    id: string;
-    role: string;
-    description: string;
-}
-
-interface FormData {
-    name: string;
-    email: string;
-}
-
-
-const UserManagementPage = () => {
-    const axiosAuth = useAxiosAuth();
-
-    // Sample initial users data
-    const [users, setUsers] = useState<User[]>([]);
-    const [perusahaan, setPerusahaan] = useState<Perusahaan[]>([])
+const UserManagementComponent = ({ initialUsers, initialPerusahaan }: Props) => {
+    const [users, setUsers] = useState<UserProps[]>(initialUsers);
+    const [perusahaan, setPerusahaan] = useState<Perusahaan[]>(initialPerusahaan)
     const [selectedEstates, setSelectedEstates] = useState<any[]>([]);
     const [selectedDivisis, setSelectedDivisis] = useState<any[]>([]);
     const [isOpen, setIsOpen] = useState<boolean>(false);
-    const [editingUser, setEditingUser] = useState<User | null>(null);
+    const [editingUser, setEditingUser] = useState<UserProps | null>(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const router = useRouter();
 
-    // Initialize react-hook-form with Zod validation
     const form = useForm<z.infer<typeof userManagementFormSchema>>({
         resolver: zodResolver(userManagementFormSchema),
         defaultValues: {
@@ -83,64 +62,71 @@ const UserManagementPage = () => {
         }
     });
 
+    // Add refresh function
+    const refreshData = async () => {
+        try {
+            const { data: refreshedUsers, error } = await getUsers();
+            if (error) {
+                toast.error('Failed to refresh data');
+                return;
+            }
+            if (refreshedUsers) {
+                setUsers(refreshedUsers);
+                router.refresh(); // Refresh Next.js cache
+            }
+        } catch (error) {
+            toast.error('Failed to refresh data');
+        }
+    };
+
     const handleSubmit = async (data: z.infer<typeof userManagementFormSchema>) => {
         try {
+            setIsSubmitting(true);
+
             if (editingUser) {
-                // For update, only include password if it's provided
-                const updateData = {
-                    ...data,
-                    password: data.password || "",
-                    confirmPassword: "" // Don't send to API
-                };
-
-                const response = await axiosAuth.patch(
-                    `${process.env.NEXT_PUBLIC_BASE_URL}/api/user/${editingUser.id}`,
-                    updateData
-                );
-
-                if (response.status === 200) {
-                    toast.success('User updated successfully');
-                    getUsers();
+                const result = await updateUser(editingUser.id, data);
+                if (result.error) {
+                    toast.error(result.error);
+                    return;
                 }
+
+                await refreshData(); // Refresh data after update
+                toast.success('User updated successfully');
             } else {
-                // For create
-                const { ...createData } = data;
-                const response = await axiosAuth.post(
-                    `${process.env.NEXT_PUBLIC_BASE_URL}/api/user`,
-                    createData
-                );
-
-                if (response.status === 201) {
-                    toast.success('User created successfully');
-                    getUsers();
+                const result = await createUser(data);
+                if (result.error) {
+                    toast.error(result.error);
+                    return;
                 }
+
+                await refreshData(); // Refresh data after create
+                toast.success('User created successfully');
             }
             handleCancel();
         } catch (error) {
-            console.error(error);
-            toast.error('An error occurred while saving the user');
+            toast.error('An error occurred');
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
-    const handleDelete = async (userId: number) => {
-        if (confirm('Are you sure you want to delete this user?')) {
-            try {
-                const response = await axiosAuth.delete(
-                    `${process.env.NEXT_PUBLIC_BASE_URL}/api/user/${userId}`
-                );
-                if (response.status === 200) {
-                    toast.success('User deleted successfully');
-                    getUsers(); // Refresh the list
-                }
-            } catch (error) {
-                toast.error('An error occurred while deleting the user');
+    const handleDelete = async (userId: string) => {
+        try {
+            const result = await deleteUser(userId);
+            if (result.error) {
+                toast.error(result.error);
+                return;
             }
+
+            await refreshData(); // Refresh data after delete
+            toast.success('User deleted successfully');
+        } catch (error) {
+            toast.error('An error occurred while deleting the user');
         }
     };
 
-    const handleEdit = (user: User) => {
+    const handleEdit = (user: UserProps) => {
         setEditingUser(user);
-        // Pre-populate the form fields
         form.reset({
             username: user.username,
             employid: user.employid,
@@ -151,7 +137,6 @@ const UserManagementPage = () => {
             divisiId: user.divisiId,
         });
 
-        // Update the estate and division dropdowns
         const selectedCompany = perusahaan.find(p => p.id === user.perusahaanId);
         setSelectedEstates(selectedCompany?.estates || []);
 
@@ -207,36 +192,18 @@ const UserManagementPage = () => {
         form.setValue('divisiId', '');
     };
 
-    const getUsers = async () => {
-        try {
-            const res = await axiosAuth.get(`${process.env.NEXT_PUBLIC_BASE_URL}/api/user/`);
-            if (res) {
-                setUsers(res.data);
-            }
-        } catch (error) {
-            toast('Peringatan', {
-                description: 'Terjadi suatu kesalahan'
-            });
-        }
-    }
-
-    const getPerusahaan = async () => {
-        try {
-            const res = await axiosAuth.get(`${process.env.NEXT_PUBLIC_BASE_URL}/api/perusahaan/`);
-            if (res) {
-                setPerusahaan(res.data.data);
-            }
-        } catch (error) {
-            toast('Peringatan', {
-                description: 'Terjadi suatu kesalahan'
-            });
-        }
-    }
-
+    // Update initial data load
     useEffect(() => {
-        getUsers();
-        getPerusahaan();
-    }, [])
+        const initializeData = async () => {
+            const { data: usersData } = await getUsers();
+            const { data: perusahaanData } = await getPerusahaan();
+
+            if (usersData) setUsers(usersData);
+            if (perusahaanData) setPerusahaan(perusahaanData);
+        };
+
+        initializeData();
+    }, []);
     return (
         <div className="p-8">
             <div className="flex justify-between items-center mb-6">
@@ -411,14 +378,22 @@ const UserManagementPage = () => {
                                 </div>
 
                                 <div className="flex justify-end gap-2 mt-6">
-                                    <Button type="button" variant="outline" onClick={handleCancel}>
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        onClick={handleCancel}
+                                        disabled={isSubmitting}
+                                    >
                                         Cancel
                                     </Button>
                                     <Button
                                         type="submit"
-                                        disabled={form.formState.isSubmitting}
+                                        disabled={isSubmitting}
                                     >
-                                        {editingUser ? 'Update' : 'Create'}
+                                        {isSubmitting ?
+                                            'Saving...' :
+                                            (editingUser ? 'Update' : 'Create')
+                                        }
                                     </Button>
                                 </div>
                             </form>
@@ -437,4 +412,4 @@ const UserManagementPage = () => {
     )
 }
 
-export default UserManagementPage;
+export default UserManagementComponent;

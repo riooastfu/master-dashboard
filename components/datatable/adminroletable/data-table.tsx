@@ -1,3 +1,4 @@
+// components/datatable/data-table.tsx
 import {
     ColumnDef,
     ColumnFiltersState,
@@ -22,22 +23,28 @@ import {
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
+import {
     DropdownMenu,
     DropdownMenuCheckboxItem,
     DropdownMenuContent,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { ChevronDown } from "lucide-react"
-import { DataTableMeta } from "./columns"
 import { DeleteDialog } from "./delete-dialog"
-import { UserProps } from "@/types"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { RoleProps } from "@/types"
+import { DataTableMeta } from "./columns"
 
 interface DataTableProps {
-    columns: ColumnDef<UserProps, any>[]
-    data: UserProps[]
-    onEdit: (user: UserProps) => void
-    onDelete: (id: string) => void
+    columns: ColumnDef<RoleProps>[]
+    data: RoleProps[]
+    onEdit: (record: RoleProps) => void
+    onDelete: (id: number) => void
 }
 
 export function DataTable({
@@ -52,23 +59,23 @@ export function DataTable({
     const [rowSelection, setRowSelection] = useState({})
     const [deleteDialog, setDeleteDialog] = useState<{
         isOpen: boolean
-        userId?: string
-        username?: string
+        roleId?: number
+        roleName?: string
     }>({
         isOpen: false
     })
 
-    const handleDeleteClick = (userId: string, username: string) => {
+    const handleDeleteClick = (roleId: number, roleName: string) => {
         setDeleteDialog({
             isOpen: true,
-            userId,
-            username
+            roleId,
+            roleName
         })
     }
 
     const handleDeleteConfirm = () => {
-        if (deleteDialog.userId) {
-            onDelete(deleteDialog.userId)
+        if (deleteDialog.roleId) {
+            onDelete(deleteDialog.roleId)
         }
         setDeleteDialog({ isOpen: false })
     }
@@ -92,7 +99,7 @@ export function DataTable({
         },
         meta: {
             onEdit,
-            onDelete: (userId: string, username: string) => handleDeleteClick(userId, username),
+            onDelete: (roleId: number, roleName: string) => handleDeleteClick(roleId, roleName),
         } as DataTableMeta,
     })
 
@@ -121,22 +128,22 @@ export function DataTable({
                 isOpen={deleteDialog.isOpen}
                 onClose={() => setDeleteDialog({ isOpen: false })}
                 onConfirm={handleDeleteConfirm}
-                username={deleteDialog.username || ""}
+                roleName={deleteDialog.roleName || ""}
             />
 
             <div className="flex items-center justify-between py-4">
                 <div className="flex items-center gap-2">
                     <Input
-                        placeholder="Filter by username..."
-                        value={(table.getColumn("username")?.getFilterValue() as string) ?? ""}
+                        placeholder="Filter by role name..."
+                        value={(table.getColumn("role")?.getFilterValue() as string) ?? ""}
                         onChange={(event) =>
-                            table.getColumn("username")?.setFilterValue(event.target.value)
+                            table.getColumn("role")?.setFilterValue(event.target.value)
                         }
                         className="max-w-sm"
                     />
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button variant="outline" className="ml-auto">
+                            <Button variant="outline">
                                 Columns <ChevronDown className="ml-2 h-4 w-4" />
                             </Button>
                         </DropdownMenuTrigger>
@@ -231,6 +238,7 @@ export function DataTable({
                     </TableBody>
                 </Table>
             </div>
+
             <div className="flex items-center justify-between py-4">
                 <div className="flex-1 text-sm text-muted-foreground">
                     {table.getFilteredRowModel().rows.length} row(s) total.

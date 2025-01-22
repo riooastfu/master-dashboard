@@ -1,43 +1,35 @@
-// components/DataTable/columns.tsx
+// columns.tsx
 import { ColumnDef } from "@tanstack/react-table"
 import { Button } from "@/components/ui/button"
-import { Pencil, Trash2 } from "lucide-react"
-import { UserProps } from "@/types"
+import { Pencil, Trash2, Users } from "lucide-react"
+import { RoleProps } from "@/types"
 
 export interface DataTableMeta {
-    onEdit: (user: UserProps) => void
-    onDelete: (id: string, username: string) => void
+    onEdit: (role: RoleProps) => void
+    onDelete: (id: number, roleName: string) => void
 }
 
-export const columns: ColumnDef<UserProps, any>[] = [
+export const columns: ColumnDef<RoleProps, any>[] = [
     {
-        accessorKey: "employid",
-        header: "Employee ID",
+        accessorKey: "id",
+        header: "ID",
     },
     {
-        accessorKey: "username",
-        header: "Username",
+        accessorKey: "role",
+        header: "Role Name",
     },
     {
-        accessorKey: "roles",
-        header: "Role",
+        accessorKey: "description",
+        header: "Description",
     },
     {
-        accessorKey: "perusahaan",
-        header: "Perusahaan",
-    },
-    {
-        accessorKey: "estate",
-        header: "Estate",
-    },
-    {
-        accessorKey: "divisi",
-        header: "Divisi",
+        accessorKey: "created_by",
+        header: "Created By",
     },
     {
         id: "actions",
         cell: ({ row, table }) => {
-            const user = row.original
+            const role = row.original
             const meta = table.options.meta as DataTableMeta
 
             return (
@@ -46,7 +38,7 @@ export const columns: ColumnDef<UserProps, any>[] = [
                         variant="outline"
                         size="sm"
                         className="h-8 w-8 p-0"
-                        onClick={() => meta.onEdit(user)}
+                        onClick={() => meta.onEdit(role)}
                     >
                         <Pencil size={16} />
                     </Button>
@@ -54,7 +46,7 @@ export const columns: ColumnDef<UserProps, any>[] = [
                         variant="outline"
                         size="sm"
                         className="h-8 w-8 p-0"
-                        onClick={() => meta.onDelete(user.id, user.username)}
+                        onClick={() => meta.onDelete(role.id, role.role)}
                     >
                         <Trash2 size={16} />
                     </Button>

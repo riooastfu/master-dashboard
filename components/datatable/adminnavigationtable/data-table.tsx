@@ -1,3 +1,4 @@
+// components/datatable/navmenutable/data-table.tsx
 import {
     ColumnDef,
     ColumnFiltersState,
@@ -27,17 +28,22 @@ import {
     DropdownMenuContent,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
 import { ChevronDown } from "lucide-react"
-import { DataTableMeta } from "./columns"
+import { NavigationProps } from "@/types"
 import { DeleteDialog } from "./delete-dialog"
-import { UserProps } from "@/types"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 interface DataTableProps {
-    columns: ColumnDef<UserProps, any>[]
-    data: UserProps[]
-    onEdit: (user: UserProps) => void
-    onDelete: (id: string) => void
+    columns: ColumnDef<NavigationProps>[]
+    data: NavigationProps[]
+    onEdit: (record: NavigationProps) => void
+    onDelete: (id: number) => void
 }
 
 export function DataTable({
@@ -52,23 +58,23 @@ export function DataTable({
     const [rowSelection, setRowSelection] = useState({})
     const [deleteDialog, setDeleteDialog] = useState<{
         isOpen: boolean
-        userId?: string
-        username?: string
+        navigationId?: number
+        navigationName?: string
     }>({
         isOpen: false
     })
 
-    const handleDeleteClick = (userId: string, username: string) => {
+    const handleDeleteClick = (navigationId: number, navigationName: string) => {
         setDeleteDialog({
             isOpen: true,
-            userId,
-            username
+            navigationId,
+            navigationName
         })
     }
 
     const handleDeleteConfirm = () => {
-        if (deleteDialog.userId) {
-            onDelete(deleteDialog.userId)
+        if (deleteDialog.navigationId) {
+            onDelete(deleteDialog.navigationId)
         }
         setDeleteDialog({ isOpen: false })
     }
@@ -92,8 +98,8 @@ export function DataTable({
         },
         meta: {
             onEdit,
-            onDelete: (userId: string, username: string) => handleDeleteClick(userId, username),
-        } as DataTableMeta,
+            onDelete: (navigationId: number, navigationName: string) => handleDeleteClick(navigationId, navigationName),
+        },
     })
 
     // Generate page numbers array
@@ -102,10 +108,8 @@ export function DataTable({
     let pages = []
 
     if (pageCount <= 7) {
-        // If 7 or fewer pages, show all page numbers
         pages = Array.from({ length: pageCount }, (_, i) => i + 1)
     } else {
-        // Complex logic for many pages
         if (currentPage <= 4) {
             pages = [1, 2, 3, 4, 5, '...', pageCount]
         } else if (currentPage >= pageCount - 3) {
@@ -121,22 +125,55 @@ export function DataTable({
                 isOpen={deleteDialog.isOpen}
                 onClose={() => setDeleteDialog({ isOpen: false })}
                 onConfirm={handleDeleteConfirm}
-                username={deleteDialog.username || ""}
+                navigationName={deleteDialog.navigationName || ""}
             />
-
             <div className="flex items-center justify-between py-4">
-                <div className="flex items-center gap-2">
+                <div className="flex gap-2">
                     <Input
-                        placeholder="Filter by username..."
-                        value={(table.getColumn("username")?.getFilterValue() as string) ?? ""}
+                        placeholder="Filter by title..."
+                        value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
                         onChange={(event) =>
-                            table.getColumn("username")?.setFilterValue(event.target.value)
+                            table.getColumn("title")?.setFilterValue(event.target.value)
                         }
                         className="max-w-sm"
                     />
+                    <Select
+                        value={(table.getColumn("menu")?.getFilterValue() as string) ?? "all"}
+                        onValueChange={(value) =>
+                            table.getColumn("menu")?.setFilterValue(value === "all" ? "" : value)
+                        }
+                    >
+                        <SelectTrigger className="w-[150px]">
+                            <SelectValue placeholder="All menu types" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">All Types</SelectItem>
+                            <SelectItem value="admin">Admin</SelectItem>
+                            <SelectItem value="gis">GIS</SelectItem>
+                            <SelectItem value="pastiplant">Pastiplant</SelectItem>
+                        </SelectContent>
+                    </Select>
+                    <Select
+                        value={(table.getColumn("mode")?.getFilterValue() as string) ?? "all"}
+                        onValueChange={(value) =>
+                            table.getColumn("mode")?.setFilterValue(value === "all" ? "" : value)
+                        }
+                    >
+                        <SelectTrigger className="w-[150px]">
+                            <SelectValue placeholder="All modes" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">All Modes</SelectItem>
+                            <SelectItem value="title">Title</SelectItem>
+                            <SelectItem value="subtitle">Subtitle</SelectItem>
+                            <SelectItem value="click">Click</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
+                <div className="flex items-center gap-2">
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button variant="outline" className="ml-auto">
+                            <Button variant="outline">
                                 Columns <ChevronDown className="ml-2 h-4 w-4" />
                             </Button>
                         </DropdownMenuTrigger>
@@ -160,16 +197,13 @@ export function DataTable({
                                 })}
                         </DropdownMenuContent>
                     </DropdownMenu>
-                </div>
-                <div className="flex items-center gap-2">
-                    <p className="text-sm font-medium">Rows per page</p>
                     <Select
                         value={`${table.getState().pagination.pageSize}`}
                         onValueChange={(value) => {
                             table.setPageSize(Number(value))
                         }}
                     >
-                        <SelectTrigger className="h-8 w-[70px]">
+                        <SelectTrigger className="w-[80px]">
                             <SelectValue placeholder={table.getState().pagination.pageSize} />
                         </SelectTrigger>
                         <SelectContent side="top">
@@ -231,6 +265,7 @@ export function DataTable({
                     </TableBody>
                 </Table>
             </div>
+
             <div className="flex items-center justify-between py-4">
                 <div className="flex-1 text-sm text-muted-foreground">
                     {table.getFilteredRowModel().rows.length} row(s) total.
