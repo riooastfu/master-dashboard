@@ -9,7 +9,6 @@ import {
     DialogFooter,
     DialogHeader,
     DialogTitle,
-    DialogTrigger,
 } from "@/components/ui/dialog"
 import { ProduksiSchema } from "@/schemas"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -23,10 +22,11 @@ import { CalendarIcon, Search } from "lucide-react"
 import { useEffect, useState } from "react"
 import { ScrollArea } from "../ui/scroll-area"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../ui/accordion"
-import useAxiosAuth from "@/hooks/use-axios-auth";
 import moment from "moment-timezone";
 import { useSession } from "next-auth/react";
 import { useMapStore } from "@/hooks/use-map-store";
+import { getCompaniesByRole } from "@/actions/produksi/company";
+import { toast } from "sonner";
 
 interface PerusahaanProps {
     id: string;
@@ -60,11 +60,11 @@ export const ProduksiModal = () => {
         setDateRange,
         dateRange
     } = useMapStore();  // Changed from useModalStore
-    const axiosAuth = useAxiosAuth();
 
     const isModalOpen = isOpen && activeMapType === "produksi";
 
     const [perusahaan, setPerusahaan] = useState<PerusahaanProps[]>([]);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
 
     // Initialize form with existing dateRange if available
     const form = useForm<z.infer<typeof ProduksiSchema>>({
@@ -75,7 +75,7 @@ export const ProduksiModal = () => {
         }
     });
 
-    const isLoading = form.formState.isSubmitting;
+    const isFormLoading = form.formState.isSubmitting;
 
     const handleClose = () => {
         onClose();
@@ -113,22 +113,42 @@ export const ProduksiModal = () => {
         }
     };
 
-    const onGetPerusahaan = async () => {
+    const fetchData = async () => {
+        setIsLoading(true);
         try {
-            const response = await axiosAuth.post(`${process.env.NEXT_PUBLIC_BASE_URL}/api/perusahaan/role`, {
-                perusahaan: session?.user.perusahaanId,
-                role: session?.user.role
-            });
+            if (!session?.user) {
+                toast.error('Session not available');
+                return;
+            }
 
-            setPerusahaan(response.data.data)
+            const perusahaan = session.user.perusahaanId;
+            const role = session.user.role;
+
+            const [perusahaanData] = await Promise.all([
+                getCompaniesByRole(perusahaan, role),
+            ]);
+
+            if (perusahaanData.data) {
+                setPerusahaan(perusahaanData.data)
+            }
+
         } catch (error) {
-            console.log("Err>> ", error)
+            if (error instanceof Error) {
+                toast.error(error.message);
+            } else {
+                toast.error('Failed to fetch data. Please try again.');
+            }
         }
-    }
+        finally {
+            setIsLoading(false);
+        }
+    };
 
     useEffect(() => {
-        onGetPerusahaan();
-    }, []);
+        if (session?.user) {  // Only fetch when session is available
+            fetchData();
+        }
+    }, [session]);
 
     return (
         <Dialog open={isModalOpen} onOpenChange={handleClose}>
@@ -230,121 +250,128 @@ export const ProduksiModal = () => {
                             </div>
 
                             <ScrollArea className="h-52">
-                                <div className="space-y-2">
-                                    {perusahaan.map((perusahaan, index) => {
-                                        const estateKeys = perusahaan.estates.map(
-                                            (estate) => `checkbox-${perusahaan.kode}-${estate.kode}`
-                                        );
-                                        const divisiKeys = perusahaan.estates.flatMap((estate) =>
-                                            estate.divisis.map(
-                                                (divisi) => `checkbox-${perusahaan.kode}-${estate.kode}-${divisi.kode}`
-                                            )
-                                        );
+                                {isLoading ? (
+                                    <div className="flex items-center justify-center h-full">
+                                        Loading...
+                                    </div>
+                                ) : (
+                                    <div className="space-y-2">
+                                        {perusahaan.map((perusahaan, index) => {
+                                            const estateKeys = perusahaan.estates.map(
+                                                (estate) => `checkbox-${perusahaan.kode}-${estate.kode}`
+                                            );
+                                            const divisiKeys = perusahaan.estates.flatMap((estate) =>
+                                                estate.divisis.map(
+                                                    (divisi) => `checkbox-${perusahaan.kode}-${estate.kode}-${divisi.kode}`
+                                                )
+                                            );
 
-                                        const childrenKeys = [...estateKeys, ...divisiKeys];
+                                            const childrenKeys = [...estateKeys, ...divisiKeys];
 
-                                        return (
-                                            <Accordion key={perusahaan.id} type="single" collapsible className="w-full max-w-lg">
-                                                <AccordionItem value={`item-${index}`} className="border-b-0">
-                                                    <AccordionTrigger>{perusahaan.description}</AccordionTrigger>
-                                                    <AccordionContent>
-                                                        {/* Perusahaan Checkbox */}
-                                                        <div className="flex items-center space-x-2">
-                                                            <Checkbox
-                                                                id={`checkbox-${perusahaan.kode}`}
-                                                                checked={selected[`checkbox-${perusahaan.kode}`] || false}
-                                                                onCheckedChange={() =>
-                                                                    toggleCheckbox(`checkbox-${perusahaan.kode}`, childrenKeys)
-                                                                }
-                                                            />
-                                                            <label
-                                                                htmlFor={`checkbox-${perusahaan.kode}`}
-                                                                className="text-sm font-medium"
-                                                            >
-                                                                Show {perusahaan.kode}
-                                                            </label>
-                                                        </div>
-                                                        {
-                                                            perusahaan.estates.map((estate, index) => {
-                                                                const estateChildrenKeys = estate.divisis.map(
-                                                                    (divisi) =>
-                                                                        `checkbox-${perusahaan.kode}-${estate.kode}-${divisi.kode}`
-                                                                );
+                                            return (
+                                                <Accordion key={perusahaan.id} type="single" collapsible className="w-full max-w-lg">
+                                                    <AccordionItem value={`item-${index}`} className="border-b-0">
+                                                        <AccordionTrigger>{perusahaan.description}</AccordionTrigger>
+                                                        <AccordionContent>
+                                                            {/* Perusahaan Checkbox */}
+                                                            <div className="flex items-center space-x-2">
+                                                                <Checkbox
+                                                                    id={`checkbox-${perusahaan.kode}`}
+                                                                    checked={selected[`checkbox-${perusahaan.kode}`] || false}
+                                                                    onCheckedChange={() =>
+                                                                        toggleCheckbox(`checkbox-${perusahaan.kode}`, childrenKeys)
+                                                                    }
+                                                                />
+                                                                <label
+                                                                    htmlFor={`checkbox-${perusahaan.kode}`}
+                                                                    className="text-sm font-medium"
+                                                                >
+                                                                    Show {perusahaan.kode}
+                                                                </label>
+                                                            </div>
+                                                            {
+                                                                perusahaan.estates.map((estate, index) => {
+                                                                    const estateChildrenKeys = estate.divisis.map(
+                                                                        (divisi) =>
+                                                                            `checkbox-${perusahaan.kode}-${estate.kode}-${divisi.kode}`
+                                                                    );
 
-                                                                return (
-                                                                    <Accordion key={estate.kode} type="single" collapsible className="ml-6">
-                                                                        <AccordionItem value={`item-${index}`} className="border-b-0">
-                                                                            <AccordionTrigger>{estate.kode}</AccordionTrigger>
-                                                                            <AccordionContent className="space-y-2">
-                                                                                {/* Estate Checkbox */}
-                                                                                <div className="flex items-center space-x-2">
-                                                                                    <Checkbox
-                                                                                        id={`checkbox-${perusahaan.kode}-${estate.kode}`}
-                                                                                        checked={
-                                                                                            selected[`checkbox-${perusahaan.kode}-${estate.kode}`] || false
-                                                                                        }
-                                                                                        onCheckedChange={() =>
-                                                                                            toggleCheckbox(
-                                                                                                `checkbox-${perusahaan.kode}-${estate.kode}`,
-                                                                                                estateChildrenKeys
-                                                                                            )
-                                                                                        }
-                                                                                    />
-                                                                                    <label
-                                                                                        htmlFor={`checkbox-${perusahaan.kode}-${estate.kode}`}
-                                                                                        className="text-sm font-medium"
-                                                                                    >
-                                                                                        Show {estate.kode}
-                                                                                    </label>
-                                                                                </div>
+                                                                    return (
+                                                                        <Accordion key={estate.kode} type="single" collapsible className="ml-6">
+                                                                            <AccordionItem value={`item-${index}`} className="border-b-0">
+                                                                                <AccordionTrigger>{estate.kode}</AccordionTrigger>
+                                                                                <AccordionContent className="space-y-2">
+                                                                                    {/* Estate Checkbox */}
+                                                                                    <div className="flex items-center space-x-2">
+                                                                                        <Checkbox
+                                                                                            id={`checkbox-${perusahaan.kode}-${estate.kode}`}
+                                                                                            checked={
+                                                                                                selected[`checkbox-${perusahaan.kode}-${estate.kode}`] || false
+                                                                                            }
+                                                                                            onCheckedChange={() =>
+                                                                                                toggleCheckbox(
+                                                                                                    `checkbox-${perusahaan.kode}-${estate.kode}`,
+                                                                                                    estateChildrenKeys
+                                                                                                )
+                                                                                            }
+                                                                                        />
+                                                                                        <label
+                                                                                            htmlFor={`checkbox-${perusahaan.kode}-${estate.kode}`}
+                                                                                            className="text-sm font-medium"
+                                                                                        >
+                                                                                            Show {estate.kode}
+                                                                                        </label>
+                                                                                    </div>
 
-                                                                                {/* Divisis */}
-                                                                                <div className="ml-4 space-y-2">
-                                                                                    {estate.divisis.map((divisi) => (
-                                                                                        <div key={divisi.id} className="flex items-center space-x-2">
-                                                                                            <Checkbox
-                                                                                                id={`checkbox-${perusahaan.kode}-${estate.kode}-${divisi.kode}`}
-                                                                                                checked={
-                                                                                                    selected[
-                                                                                                    `checkbox-${perusahaan.kode}-${estate.kode}-${divisi.kode}`
-                                                                                                    ] || false
-                                                                                                }
-                                                                                                onCheckedChange={() =>
-                                                                                                    toggleCheckbox(
+                                                                                    {/* Divisis */}
+                                                                                    <div className="ml-4 space-y-2">
+                                                                                        {estate.divisis.map((divisi) => (
+                                                                                            <div key={divisi.id} className="flex items-center space-x-2">
+                                                                                                <Checkbox
+                                                                                                    id={`checkbox-${perusahaan.kode}-${estate.kode}-${divisi.kode}`}
+                                                                                                    checked={
+                                                                                                        selected[
                                                                                                         `checkbox-${perusahaan.kode}-${estate.kode}-${divisi.kode}`
-                                                                                                    )
-                                                                                                }
-                                                                                            />
-                                                                                            <label
-                                                                                                htmlFor={`checkbox-${perusahaan.kode}-${estate.kode}-${divisi.kode}`}
-                                                                                                className="text-sm font-medium"
-                                                                                            >
-                                                                                                {divisi.description}
-                                                                                            </label>
-                                                                                        </div>
-                                                                                    ))}
-                                                                                </div>
-                                                                            </AccordionContent>
-                                                                        </AccordionItem>
-                                                                    </Accordion>
-                                                                )
-                                                            })
-                                                        }
-                                                    </AccordionContent>
-                                                </AccordionItem>
-                                            </Accordion>
+                                                                                                        ] || false
+                                                                                                    }
+                                                                                                    onCheckedChange={() =>
+                                                                                                        toggleCheckbox(
+                                                                                                            `checkbox-${perusahaan.kode}-${estate.kode}-${divisi.kode}`
+                                                                                                        )
+                                                                                                    }
+                                                                                                />
+                                                                                                <label
+                                                                                                    htmlFor={`checkbox-${perusahaan.kode}-${estate.kode}-${divisi.kode}`}
+                                                                                                    className="text-sm font-medium"
+                                                                                                >
+                                                                                                    {divisi.description}
+                                                                                                </label>
+                                                                                            </div>
+                                                                                        ))}
+                                                                                    </div>
+                                                                                </AccordionContent>
+                                                                            </AccordionItem>
+                                                                        </Accordion>
+                                                                    )
+                                                                })
+                                                            }
+                                                        </AccordionContent>
+                                                    </AccordionItem>
+                                                </Accordion>
 
-                                        );
-                                    })}
+                                            );
+                                        })}
 
-                                    {/* <p>{`${moment(dateRange?.startDate).format('DD MMM YYYY')}, ${moment(dateRange?.endDate).format('DD MMM YYYY')}`}</p> */}
-                                    {/* <pre>{JSON.stringify(selected, null, 2)}</pre> */}
-                                </div>
+                                        {/* <p>{`${moment(dateRange?.startDate).format('DD MMM YYYY')}, ${moment(dateRange?.endDate).format('DD MMM YYYY')}`}</p> */}
+                                        {/* <pre>{JSON.stringify(selected, null, 2)}</pre> */}
+                                    </div>
+                                )}
+
                             </ScrollArea>
 
                         </div>
                         <DialogFooter className="bg-gray-100 px-6 py-4">
-                            <Button type="submit" variant="default" disabled={isLoading}>
+                            <Button type="submit" variant="default" disabled={isFormLoading}>
                                 Cari
                                 <Search size={15} />
                             </Button>
