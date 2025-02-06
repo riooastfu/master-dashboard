@@ -1,9 +1,9 @@
 "use client"
 
-import CustomMapContainer from "../leaflet/map"
+import CustomMapContainer from "../../leaflet/map"
 
 import React from 'react'
-import ModalButton from "../modals/modal-button"
+import ModalButton from "../../modals/modal-button"
 
 const RotasiMap = () => {
     return (

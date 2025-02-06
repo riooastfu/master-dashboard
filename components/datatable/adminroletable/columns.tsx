@@ -23,6 +23,10 @@ export const columns: ColumnDef<RoleProps, any>[] = [
         header: "Description",
     },
     {
+        accessorKey: "auth_menu",
+        header: "Auth Menu",
+    },
+    {
         accessorKey: "created_by",
         header: "Created By",
     },

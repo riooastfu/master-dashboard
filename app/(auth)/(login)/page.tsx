@@ -1,7 +1,6 @@
 
 // import { getSession } from "@/lib/actions";
 import { LoginForm } from "@/components/auth/login-form";
-import { redirect } from "next/navigation";
 
 const LoginPage = async () => {
     return (

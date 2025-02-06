@@ -11,10 +11,7 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { useModalStore } from "@/hooks/use-modal-store"
-import { PopmenuSchema, ProduksiSchema } from "@/schemas"
+import { ProduksiSchema } from "@/schemas"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form"
@@ -22,7 +19,6 @@ import { Checkbox } from "../ui/checkbox"
 import { Calendar } from "../ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
 import { cn } from "@/lib/utils"
-import { format } from "date-fns"
 import { CalendarIcon, Search } from "lucide-react"
 import { useEffect, useState } from "react"
 import { ScrollArea } from "../ui/scroll-area"
@@ -30,6 +26,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "..
 import useAxiosAuth from "@/hooks/use-axios-auth";
 import moment from "moment-timezone";
 import { useSession } from "next-auth/react";
+import { useMapStore } from "@/hooks/use-map-store";
 
 interface PerusahaanProps {
     id: string;
@@ -53,35 +50,68 @@ interface DivisiProps {
 
 export const ProduksiModal = () => {
     const { data: session } = useSession();
-    const { isOpen, onClose, type } = useModalStore();
-    const { selected, toggleCheckbox, updateStyles, setDateRange, dateRange } = useModalStore();
+    const {
+        isOpen,
+        onClose,
+        activeMapType,  // Changed from 'type'
+        selected,
+        toggleCheckbox,
+        updateStyles,
+        setDateRange,
+        dateRange
+    } = useMapStore();  // Changed from useModalStore
     const axiosAuth = useAxiosAuth();
 
-    const isModalOpen = isOpen && type === "produksi";
+    const isModalOpen = isOpen && activeMapType === "produksi";
 
     const [perusahaan, setPerusahaan] = useState<PerusahaanProps[]>([]);
 
+    // Initialize form with existing dateRange if available
     const form = useForm<z.infer<typeof ProduksiSchema>>({
         resolver: zodResolver(ProduksiSchema),
         defaultValues: {
-            tanggal_mulai: new Date(),
-            tanggal_akhir: new Date(),
+            tanggal_mulai: dateRange?.startDate || new Date(),
+            tanggal_akhir: dateRange?.endDate || new Date(),
         }
     });
 
     const isLoading = form.formState.isSubmitting;
 
     const handleClose = () => {
-        // form.reset();
         onClose();
     };
 
-    const onSubmit = (values: z.infer<typeof ProduksiSchema>) => {
-        const startDate = moment(values.tanggal_mulai).format('YYYYMM');
-        const endDate = moment(values.tanggal_akhir).format('YYYYMM');
-        setDateRange({ startDate: values.tanggal_mulai, endDate: values.tanggal_akhir })
-        updateStyles(startDate, endDate);
-    }
+    const onSubmit = async (values: z.infer<typeof ProduksiSchema>) => {
+        try {
+            const startDate = moment(values.tanggal_mulai);
+            const endDate = moment(values.tanggal_akhir);
+
+            if (endDate.isBefore(startDate)) {
+                form.setError('tanggal_akhir', {
+                    type: 'manual',
+                    message: 'End date must be after start date'
+                });
+                return;
+            }
+
+            setDateRange({
+                startDate: values.tanggal_mulai,
+                endDate: values.tanggal_akhir
+            });
+
+            // Use the new updateStyles structure
+            if (updateStyles.produksi) {
+                await updateStyles.produksi(
+                    startDate.format('YYYYMM'),
+                    endDate.format('YYYYMM')
+                );
+            }
+
+            onClose();
+        } catch (error) {
+            console.error('Error updating map:', error);
+        }
+    };
 
     const onGetPerusahaan = async () => {
         try {
@@ -307,7 +337,7 @@ export const ProduksiModal = () => {
                                         );
                                     })}
 
-                                    <p>{`${moment(dateRange?.startDate).format('DD MMM YYYY')}, ${moment(dateRange?.endDate).format('DD MMM YYYY')}`}</p>
+                                    {/* <p>{`${moment(dateRange?.startDate).format('DD MMM YYYY')}, ${moment(dateRange?.endDate).format('DD MMM YYYY')}`}</p> */}
                                     {/* <pre>{JSON.stringify(selected, null, 2)}</pre> */}
                                 </div>
                             </ScrollArea>

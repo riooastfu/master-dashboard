@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { useForm } from "react-hook-form"
@@ -16,24 +16,24 @@ import { RoleProps } from "@/types"
 import { createRole, deleteRole, getRoles, updateRole } from "@/actions/admin/role"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
+import { useSession } from "next-auth/react"
 
-interface Props {
-    initialRoles: RoleProps[]
-}
-// Interface for Role data
-interface Role {
-    id: number
-    role: string
-    description: string
-    created_by: string
-}
+const authModes = [
+    { value: "allmap", label: "All Map" },
+    { value: "onept", label: "One PT" },
+    { value: "oneestate", label: "One Estate" },
+    { value: "onedivisi", label: "One Divisi" },
+]
 
-export default function RoleManagementComponent({ initialRoles }: Props) {
+export default function RoleManagementComponent() {
     const router = useRouter();
+    const { data: session } = useSession() // Get current session
+    const currentUser = session?.user?.username || "" // Get username from session
 
-    const [roles, setRoles] = useState<Role[]>(initialRoles)
+    const [roles, setRoles] = useState<RoleProps[]>([])
     const [isOpen, setIsOpen] = useState(false)
-    const [editingRole, setEditingRole] = useState<Role | null>(null)
+    const [editingRole, setEditingRole] = useState<RoleProps | null>(null)
     const [isSubmitting, setIsSubmitting] = useState(false)
 
     const form = useForm<z.infer<typeof roleManagementFormSchema>>({
@@ -41,9 +41,33 @@ export default function RoleManagementComponent({ initialRoles }: Props) {
         defaultValues: {
             role: "",
             description: "",
-            created_by: ""
+            created_by: currentUser,
+            auth_menu: "onedivisi",
         },
     })
+
+    useEffect(() => {
+        fetchData();
+    }, []);
+
+    const fetchData = async () => {
+        try {
+            const [rolesData] = await Promise.all([
+                getRoles(),
+            ]);
+
+            if (rolesData.data) {
+                setRoles(rolesData.data)
+            }
+
+        } catch (error) {
+            if (error instanceof Error) {
+                toast.error(error.message);
+            } else {
+                toast.error('Failed to fetch data. Please try again.');
+            }
+        }
+    };
 
     // Add refresh function
     const refreshData = async () => {
@@ -65,6 +89,11 @@ export default function RoleManagementComponent({ initialRoles }: Props) {
     const handleSubmit = async (data: z.infer<typeof roleManagementFormSchema>) => {
         try {
             setIsSubmitting(true);
+
+            // Ensure created_by is set to current user for new roles
+            if (!editingRole) {
+                data.created_by = currentUser;
+            }
 
             if (editingRole) {
                 const result = await updateRole(editingRole.id, data);
@@ -93,12 +122,13 @@ export default function RoleManagementComponent({ initialRoles }: Props) {
         }
     }
 
-    const handleEdit = (role: Role) => {
+    const handleEdit = (role: RoleProps) => {
         setEditingRole(role)
         form.reset({
             role: role.role,
             description: role.description,
             created_by: role.created_by,
+            auth_menu: role.auth_menu as "allmap" | "onept" | "oneestate" | "onedivisi"
         })
         setIsOpen(true)
     }
@@ -126,6 +156,7 @@ export default function RoleManagementComponent({ initialRoles }: Props) {
             role: "",
             description: "",
             created_by: "",
+            auth_menu: "onedivisi"
         })
     }
 
@@ -137,9 +168,16 @@ export default function RoleManagementComponent({ initialRoles }: Props) {
                 role: "",
                 description: "",
                 created_by: "",
+                auth_menu: "onedivisi"
             })
         }
     };
+
+    useEffect(() => {
+        if (currentUser && !editingRole) {
+            form.setValue('created_by', currentUser)
+        }
+    }, [currentUser, form, editingRole])
 
     return (
         <div className="p-8">
@@ -184,6 +222,34 @@ export default function RoleManagementComponent({ initialRoles }: Props) {
                                             <FormControl>
                                                 <Input placeholder="Enter role description" {...field} />
                                             </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={form.control}
+                                    name="auth_menu"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Auth Menu</FormLabel>
+                                            <Select
+                                                onValueChange={field.onChange}
+                                                defaultValue={field.value || "click"}
+                                            >
+                                                <FormControl>
+                                                    <SelectTrigger>
+                                                        <SelectValue placeholder="Select mode" />
+                                                    </SelectTrigger>
+                                                </FormControl>
+                                                <SelectContent>
+                                                    {authModes.map((mode) => (
+                                                        <SelectItem key={mode.value} value={mode.value}>
+                                                            {mode.label}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
                                             <FormMessage />
                                         </FormItem>
                                     )}

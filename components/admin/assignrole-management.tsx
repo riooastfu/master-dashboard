@@ -1,13 +1,6 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-} from "@/components/ui/dialog"
 import { DataTable } from "../datatable/adminassignroletable/data-table"
 import { columns } from "@/components/datatable/adminassignroletable/column";
 import { toast } from "sonner"
@@ -59,7 +52,11 @@ export default function AssignRoleComponent() {
                 setUserRoles(userRolesData.data)
             }
         } catch (error) {
-            toast.error('Failed to fetch data')
+            if (error instanceof Error) {
+                toast.error(error.message);
+            } else {
+                toast.error('Failed to fetch data. Please try again.');
+            }
         }
     }
 
@@ -94,7 +91,11 @@ export default function AssignRoleComponent() {
             router.refresh()
             await fetchData()
         } catch (error) {
-            toast.error('Failed to update roles')
+            if (error instanceof Error) {
+                toast.error(error.message);
+            } else {
+                toast.error('Failed to update role. Please try again.');
+            }
         } finally {
             setIsSubmitting(false)
         }

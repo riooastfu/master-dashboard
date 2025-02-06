@@ -1,7 +1,6 @@
-// app/navigation/page.tsx
 "use client"
 
-import { useState, useEffect } from "react"
+import { useEffect, useState } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { useForm } from "react-hook-form"
@@ -21,8 +20,13 @@ import { HoverCard, HoverCardContent, HoverCardTrigger } from "../ui/hover-card"
 import { navManagementFormSchema } from "@/schemas"
 import { WarningGuideDialog } from "../datatable/adminnavigationtable/warning-guide-dialog.tsx"
 
-interface Props {
-    initialNavigations: NavigationProps[]
+type CreatedNavDataProps = {
+    title: string;
+    url: string;
+    mode: "title" | "subtitle" | "click";
+    menu: "admin" | "gis" | "pastiplant";
+    parent_menu_id?: string;  // Make it optional
+    icon?: string;
 }
 
 // Available icons and menu types
@@ -47,15 +51,15 @@ const menuTypes = [
     { value: "pastiplant", label: "Pastiplant" },
 ]
 
-export default function NavigationManagementComponent({ initialNavigations }: Props) {
+export default function NavigationManagementComponent() {
     const router = useRouter()
 
-    const [menus, setMenus] = useState<NavigationProps[]>(initialNavigations)
+    const [menus, setMenus] = useState<NavigationProps[]>([])
     const [isOpen, setIsOpen] = useState(false)
     const [editingMenu, setEditingMenu] = useState<NavigationProps | null>(null)
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [isGuideOpen, setIsGuideOpen] = useState(false)
-    const [createdNavData, setCreatedNavData] = useState<any>(null)
+    const [createdNavData, setCreatedNavData] = useState<CreatedNavDataProps | null>(null)
 
     const form = useForm<z.infer<typeof navManagementFormSchema>>({
         resolver: zodResolver(navManagementFormSchema),
@@ -68,6 +72,29 @@ export default function NavigationManagementComponent({ initialNavigations }: Pr
             menu: "admin",
         },
     })
+
+    useEffect(() => {
+        fetchData();
+    }, []);
+
+    const fetchData = async () => {
+        try {
+            const [navData] = await Promise.all([
+                getNavigations(),
+            ]);
+
+            if (navData.data) {
+                setMenus(navData.data)
+            }
+
+        } catch (error) {
+            if (error instanceof Error) {
+                toast.error(error.message);
+            } else {
+                toast.error('Failed to refresh data. Please try again.');
+            }
+        }
+    };
 
     // Add refresh function
     const refreshData = async () => {

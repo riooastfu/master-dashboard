@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Pencil, Plus, Trash2 } from "lucide-react";
+import { Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -17,11 +17,6 @@ import { columns } from "@/components/datatable/adminusertable/columns";
 import { createUser, deleteUser, getPerusahaan, getUsers, updateUser } from "@/actions/admin/user";
 import { useRouter } from "next/navigation";
 import { UserProps } from "@/types";
-
-interface Props {
-    initialUsers: UserProps[]
-    initialPerusahaan: Perusahaan[]
-}
 
 interface Perusahaan {
     id: string;
@@ -39,9 +34,9 @@ interface Perusahaan {
     }>;
 }
 
-const UserManagementComponent = ({ initialUsers, initialPerusahaan }: Props) => {
-    const [users, setUsers] = useState<UserProps[]>(initialUsers);
-    const [perusahaan, setPerusahaan] = useState<Perusahaan[]>(initialPerusahaan)
+const UserManagementComponent = () => {
+    const [users, setUsers] = useState<UserProps[]>([]);
+    const [perusahaan, setPerusahaan] = useState<Perusahaan[]>([])
     const [selectedEstates, setSelectedEstates] = useState<any[]>([]);
     const [selectedDivisis, setSelectedDivisis] = useState<any[]>([]);
     const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -61,6 +56,33 @@ const UserManagementComponent = ({ initialUsers, initialPerusahaan }: Props) => 
             divisiId: '',
         }
     });
+
+    useEffect(() => {
+        fetchData();
+    }, []);
+
+    const fetchData = async () => {
+        try {
+            const [usersData, perusahaanData] = await Promise.all([
+                getUsers(), getPerusahaan()
+            ]);
+
+            if (usersData.data) {
+                setUsers(usersData.data)
+            }
+
+            if (perusahaanData.data) {
+                setPerusahaan(perusahaanData.data)
+            }
+
+        } catch (error) {
+            if (error instanceof Error) {
+                toast.error(error.message);
+            } else {
+                toast.error('Failed to fetch data. Please try again.');
+            }
+        }
+    };
 
     // Add refresh function
     const refreshData = async () => {

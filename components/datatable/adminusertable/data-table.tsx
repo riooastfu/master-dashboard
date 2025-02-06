@@ -84,6 +84,7 @@ export function DataTable({
         onColumnFiltersChange: setColumnFilters,
         onColumnVisibilityChange: setColumnVisibility,
         onRowSelectionChange: setRowSelection,
+        enableMultiSort: true,
         state: {
             sorting,
             columnFilters,

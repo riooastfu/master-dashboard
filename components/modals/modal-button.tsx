@@ -3,15 +3,16 @@
 import React from 'react'
 import { Button } from '../ui/button'
 import { Layers, PanelsTopLeft } from 'lucide-react'
-import { ModalType, useModalStore } from '@/hooks/use-modal-store'
+import { MapType, useMapStore } from '@/hooks/use-map-store'
 
 interface ModalButtonProps {
+    type: MapType;
     className?: string;
-    type: ModalType
 }
 
+
 const ModalButton: React.FC<ModalButtonProps> = ({ className, type }) => {
-    const { onOpen } = useModalStore();
+    const { onOpen } = useMapStore();
 
     return (
         <Button onClick={() => onOpen(type)} variant="primary" size="icon" className={`h-8 w-8 ${className}`}>

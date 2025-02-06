@@ -1,4 +1,4 @@
-import RotasiMap from '@/components/map/rotasi-map'
+import RotasiMap from '@/components/map/produksi/rotasi-map'
 import React from 'react'
 
 const Rotasi = () => {

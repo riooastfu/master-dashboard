@@ -71,6 +71,7 @@ export const userManagementFormSchema = z.object({
 export const roleManagementFormSchema = z.object({
     role: z.string().min(1, "Role name is required"),
     description: z.string().min(1, "Description is required"),
+    auth_menu: z.enum(["allmap", "onept", "oneestate", "onedivisi"]),
     created_by: z.string()
 })
 
@@ -82,4 +83,29 @@ export const navManagementFormSchema = z.object({
     icon: z.string().optional(),
     mode: z.enum(["title", "subtitle", "click"]),
     menu: z.enum(["admin", "gis", "pastiplant"]),
+})
+
+export const companyFormSchema = z.object({
+    kode: z.string().min(1, "Code is required").max(10, "Code must be less than 10 characters"),
+    no_urut: z.coerce.number().int("Order must be an integer").positive("Order must be positive"),
+    description: z.string().min(1, "Company name is required"),
+})
+
+export const estateFormSchema = z.object({
+    kode: z.string().min(1, "Code is required").max(10, "Code must be less than 10 characters"),
+    no_urut: z.coerce.number().int("Order must be an integer").positive("Order must be positive"),
+    description: z.string().min(1, "Estate name is required"),
+    perusahaanId: z.string().min(1, "Company is required"),
+})
+
+export const divisionFormSchema = z.object({
+    kode: z.string().min(1, "Code is required").max(10, "Code must be less than 10 characters"),
+    no_urut: z.coerce.number().int("Order must be an integer").positive("Order must be positive"),
+    description: z.string().min(1, "Division name is required"),
+    estateId: z.string().min(1, "Estate is required"),
+})
+
+export const activityManagementFormSchema = z.object({
+    kode: z.string().min(1, "Code is required").max(6, "Code must be less than pr equals to 6 characters"),
+    description: z.string().min(1, "Activity name is required"),
 })

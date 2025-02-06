@@ -1,7 +1,7 @@
 // components/DataTable/columns.tsx
 import { ColumnDef } from "@tanstack/react-table"
 import { Button } from "@/components/ui/button"
-import { Pencil, Trash2 } from "lucide-react"
+import { Pencil, Trash2, ArrowUpDown } from "lucide-react"
 import { UserProps } from "@/types"
 
 export interface DataTableMeta {
@@ -16,7 +16,18 @@ export const columns: ColumnDef<UserProps, any>[] = [
     },
     {
         accessorKey: "username",
-        header: "Username",
+        header: ({ column }) => {
+            return (
+                <Button
+                    variant="ghost"
+                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                >
+                    Username
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                </Button>
+            )
+        },
+        sortingFn: "text"
     },
     {
         accessorKey: "roles",
@@ -24,7 +35,18 @@ export const columns: ColumnDef<UserProps, any>[] = [
     },
     {
         accessorKey: "perusahaan",
-        header: "Perusahaan",
+        header: ({ column }) => {
+            return (
+                <Button
+                    variant="ghost"
+                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                >
+                    Perusahaan
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                </Button>
+            )
+        },
+        sortingFn: "text"
     },
     {
         accessorKey: "estate",

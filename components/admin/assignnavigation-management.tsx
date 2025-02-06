@@ -4,7 +4,6 @@ import React, { useState, useEffect, useMemo } from "react";
 import {
     Card,
     CardContent,
-    CardDescription,
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
@@ -22,7 +21,6 @@ import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { NavigationProps, RoleNavigationProps, RoleProps } from "@/types";
@@ -70,7 +68,11 @@ const AssignNavigationManagementComponent = () => {
             }
 
         } catch (error) {
-            toast.error("Failed to fetch data. Please try again.");
+            if (error instanceof Error) {
+                toast.error(error.message);
+            } else {
+                toast.error('Failed to refresh data. Please try again.');
+            }
         } finally {
             setLoading(false);
         }
@@ -81,8 +83,6 @@ const AssignNavigationManagementComponent = () => {
             const hasAccess = roleNavMappings.some(
                 (mapping) => mapping.roleId === roleId && mapping.navigationId === navId
             );
-
-            console.log('Current access state:', { hasAccess, roleId, navId });
 
             let result;
             if (hasAccess) {
@@ -136,10 +136,6 @@ const AssignNavigationManagementComponent = () => {
         return navMenus.filter(
             (menu) => menu.parent_menu_id === parentId && menu.menu === mode
         );
-    };
-
-    const getMenuCountByMode = (mode: string): number => {
-        return navMenus.filter((menu) => menu.menu === mode).length;
     };
 
     // Add this function to handle expand/collapse
