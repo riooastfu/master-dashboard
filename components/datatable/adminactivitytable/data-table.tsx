@@ -37,7 +37,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { ChevronDown } from "lucide-react"
 import { DeleteDialog } from "./delete-dialog"
-import { ActivityProps } from "@/types"
+import { ActivityProps } from "@/types/types"
 import { DataTableMeta } from "./columns"
 
 interface DataTableProps {

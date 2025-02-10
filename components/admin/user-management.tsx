@@ -16,7 +16,7 @@ import { DataTable } from "@/components/datatable/adminusertable/data-table";
 import { columns } from "@/components/datatable/adminusertable/columns";
 import { createUser, deleteUser, getPerusahaan, getUsers, updateUser } from "@/actions/admin/user";
 import { useRouter } from "next/navigation";
-import { UserProps } from "@/types";
+import { UserProps } from "@/types/types";
 
 interface Perusahaan {
     id: string;

@@ -13,7 +13,7 @@ import { DivisionForm } from "./divisi-form"
 import { toast } from "sonner"
 import { getCompanies, getEstates, getDivisions, deleteCompany, deleteEstate, deleteDivision } from "@/actions/admin/company"
 import { useRouter } from "next/navigation"
-import { CompanyProps, EstateProps, DivisionProps } from "@/types"
+import { CompanyProps, EstateProps, DivisionProps } from "@/types/types"
 import { Button } from "../ui/button"
 
 export default function CompanyManagementComponent() {

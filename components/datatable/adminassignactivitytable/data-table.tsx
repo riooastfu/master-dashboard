@@ -29,7 +29,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-import { ActivityProps } from "@/types"
+import { ActivityProps } from "@/types/types"
 
 interface DataTableProps {
     columns: ColumnDef<ActivityProps>[],

@@ -72,8 +72,13 @@ export const useMapStore = create<MapStore>((set) => ({
     },
 
     setActiveMapType: (type) => set({ activeMapType: type }),
+
+    // Modified onOpen to handle both isOpen and activeMapType
     onOpen: (type) => set({ isOpen: true, activeMapType: type }),
-    onClose: () => set({ isOpen: false, activeMapType: null }),
+
+    // Modified onClose to only close the modal without affecting activeMapType
+    onClose: () => set({ isOpen: false }), // Removed setting activeMapType to null
+
     setDateRange: (range) => set({ dateRange: range }),
 
     toggleCheckbox: (key, childrenKeys = []) =>

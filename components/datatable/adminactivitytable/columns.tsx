@@ -2,7 +2,7 @@
 import { ColumnDef } from "@tanstack/react-table"
 import { Button } from "@/components/ui/button"
 import { Pencil, Trash2 } from "lucide-react"
-import { ActivityProps } from "@/types"
+import { ActivityProps } from "@/types/types"
 
 export interface DataTableMeta {
     onEdit: (activity: ActivityProps) => void

@@ -3,7 +3,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/colla
 import { SidebarMenuButton, SidebarMenuItem } from "../ui/sidebar";
 import SubMenuitem from "./sub-menuitem";
 import * as LucideIcons from "lucide-react";
-import { MenuItemProps } from "@/types";
+import { MenuItemProps } from "@/types/types";
 
 const CollapsibleMenuItem = ({ item, pathname }: { item: MenuItemProps; pathname: string }) => {
     const IconComponent = LucideIcons[item.icon as keyof typeof LucideIcons] as LucideIcon;

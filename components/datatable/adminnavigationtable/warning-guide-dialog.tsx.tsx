@@ -8,7 +8,7 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-import { NavigationProps } from "@/types"
+import { NavigationProps } from "@/types/types"
 
 interface WarningGuideDialogProps {
     isOpen: boolean

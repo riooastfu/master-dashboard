@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Search } from "lucide-react";
-import { ActivityProps, RoleProps } from '@/types';
+import { ActivityProps, RoleProps } from '@/types/types';
 import { getRoles } from '@/actions/admin/role';
 import { toast } from 'sonner';
 import { assignRoleActivity, deleteRoleActivity, getActivity } from '@/actions/admin/activity';

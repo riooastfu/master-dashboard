@@ -1,4 +1,4 @@
-import { MenuItemProps } from "@/types";
+import { MenuItemProps } from "@/types/types";
 import { ChevronRight, type LucideIcon } from "lucide-react";
 import * as LucideIcons from "lucide-react";
 import { SidebarMenuButton, SidebarMenuItem } from "../ui/sidebar";

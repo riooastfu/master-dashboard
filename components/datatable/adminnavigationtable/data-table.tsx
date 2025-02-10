@@ -36,7 +36,7 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import { ChevronDown } from "lucide-react"
-import { NavigationProps } from "@/types"
+import { NavigationProps } from "@/types/types"
 import { DeleteDialog } from "./delete-dialog"
 
 interface DataTableProps {

@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { DataTable } from "../datatable/adminassignroletable/data-table"
 import { columns } from "@/components/datatable/adminassignroletable/column";
 import { toast } from "sonner"
-import { RoleProps, UserProps } from "@/types"
+import { RoleProps, UserProps } from "@/types/types"
 import { getUsers } from "@/actions/admin/user"
 import { getRoles, getUsersRoles, updateUserRoles } from "@/actions/admin/role"
 import { AssignRoleDialog } from "../datatable/adminassignroletable/assignrole-dialog"

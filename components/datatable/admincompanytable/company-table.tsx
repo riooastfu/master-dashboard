@@ -4,7 +4,7 @@ import { DataTable } from "./data-table"
 import { ColumnDef } from "@tanstack/react-table"
 import { Button } from "@/components/ui/button"
 import { Pencil, Trash2 } from "lucide-react"
-import { CompanyProps } from "@/types"
+import { CompanyProps } from "@/types/types"
 
 export function CompanyTable({ data, onEdit, onDelete }: { data: CompanyProps[], onEdit: (company: CompanyProps) => void, onDelete: (id: string) => void }) {
 

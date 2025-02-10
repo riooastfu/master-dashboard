@@ -1,6 +1,6 @@
 "use client"
 import { getNavigationRole } from "@/actions/sidebar";
-import { MenuItemProps } from "@/types";
+import { MenuItemProps } from "@/types/types";
 import { useEffect, useState } from "react";
 
 export const useNavigation = (roleId: string) => {

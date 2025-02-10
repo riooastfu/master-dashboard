@@ -5,7 +5,7 @@ import { DataTable } from "./data-table"
 import { ColumnDef } from "@tanstack/react-table"
 import { Button } from "@/components/ui/button"
 import { Pencil, Trash2 } from "lucide-react"
-import { DivisionProps, EstateProps } from "@/types"
+import { DivisionProps, EstateProps } from "@/types/types"
 
 export function DivisionTable({ data, estates, onEdit, onDelete }: { data: DivisionProps[]; estates: EstateProps[]; onEdit: (division: DivisionProps) => void; onDelete: (id: string) => void }) {
     const columns: ColumnDef<DivisionProps>[] = [

@@ -2,7 +2,7 @@
 import { ColumnDef } from "@tanstack/react-table"
 import { Button } from "@/components/ui/button"
 import { Pencil, Trash2, Users } from "lucide-react"
-import { RoleProps } from "@/types"
+import { RoleProps } from "@/types/types"
 
 export interface DataTableMeta {
     onEdit: (role: RoleProps) => void

@@ -14,7 +14,7 @@ import { DataTable } from "@/components/datatable/adminnavigationtable/data-tabl
 import { columns } from "@/components/datatable/adminnavigationtable/column"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
-import { NavigationProps } from "@/types"
+import { NavigationProps } from "@/types/types"
 import { createNavigation, deleteNavigation, getNavigations, updateNavigation } from "@/actions/admin/navigation"
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "../ui/hover-card"
 import { navManagementFormSchema } from "@/schemas"

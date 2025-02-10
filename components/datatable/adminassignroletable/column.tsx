@@ -2,7 +2,7 @@
 import { ColumnDef } from "@tanstack/react-table"
 import { Button } from "@/components/ui/button"
 import { Shield } from "lucide-react"
-import { UserProps } from "@/types"
+import { UserProps } from "@/types/types"
 
 export interface DataTableMeta {
     onAssignRoles: (user: UserProps) => void

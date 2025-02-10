@@ -1,7 +1,7 @@
 // columns.tsx
 import { ColumnDef } from "@tanstack/react-table"
 import { Checkbox } from "@/components/ui/checkbox"
-import { ActivityProps } from "@/types";
+import { ActivityProps } from "@/types/types";
 
 export interface ActivityTableMeta {
     onToggleActivity: (activityId: number, activityName: string) => void;

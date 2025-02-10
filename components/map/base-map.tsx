@@ -1,8 +1,3 @@
-/**
- * BaseMap Component
- * An optimized React component for rendering interactive maps with efficient layer updates.
- */
-
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FeatureGroup, GeoJSON, Marker, Tooltip, LayerGroup, useMap } from 'react-leaflet';
 import { Loader2 } from 'lucide-react';
@@ -12,6 +7,8 @@ import ModalButton from '../modals/modal-button';
 import { MapType, useMapStore } from '@/hooks/use-map-store';
 import { PathOptions } from 'leaflet';
 import { coordinateMap } from './config-map';
+import PrintMapButton from '../leaflet/print-map';
+import MapLegend from '../leaflet/map-legend';
 
 interface BaseMapProps {
     mapType: MapType;
@@ -48,8 +45,21 @@ export const BaseMap: React.FC<BaseMapProps> = ({
         selected,
         dateRange,
         layerLabels,
-        toggleLayerLabel
+        toggleLayerLabel,
+        setActiveMapType
     } = useMapStore();
+
+    // Set active map type when component mounts
+    useEffect(() => {
+        setActiveMapType(mapType);
+        // Only clear the active map type when the component is unmounting completely
+        return () => {
+            // Check if we're really unmounting vs just closing the modal
+            if (!document.querySelector('[data-map-container]')) {
+                setActiveMapType(null);
+            }
+        };
+    }, [mapType, setActiveMapType]);
 
     // Effect to handle layer color updates
     useEffect(() => {
@@ -189,6 +199,8 @@ export const BaseMap: React.FC<BaseMapProps> = ({
                 className="m-3 top-0 right-0 z-[1000] absolute"
             />
 
+            <PrintMapButton className="m-3 top-12 right-0 z-[1000] absolute" />
+
             <LayerControl
                 title="Map Labels"
                 layers={[
@@ -196,6 +208,8 @@ export const BaseMap: React.FC<BaseMapProps> = ({
                 ]}
                 onToggle={(id, value) => toggleLayerLabel(mapType, id as keyof typeof layerLabels[typeof mapType], value)}
             />
+
+            <MapLegend className="bottom-5 right-5" />
 
             {selectedCoordinates}
 

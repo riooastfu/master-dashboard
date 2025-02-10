@@ -13,7 +13,7 @@ import {
 import { usePathname } from "next/navigation";
 import { useMainMenu } from "@/hooks/use-main-menu";
 import { useMemo } from "react";
-import { MenuItemProps } from "@/types";
+import { MenuItemProps } from "@/types/types";
 import CollapsibleMenuItem from "./collapsible-menuitem";
 import StandardMenuItem from "./standard-menuitem";
 

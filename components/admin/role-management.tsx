@@ -12,7 +12,7 @@ import { Plus } from "lucide-react"
 import { DataTable } from "../datatable/adminroletable/data-table"
 import { columns } from "@/components/datatable/adminroletable/columns";
 import { roleManagementFormSchema } from "@/schemas"
-import { RoleProps } from "@/types"
+import { RoleProps } from "@/types/types"
 import { createRole, deleteRole, getRoles, updateRole } from "@/actions/admin/role"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"

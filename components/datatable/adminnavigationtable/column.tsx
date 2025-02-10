@@ -2,7 +2,7 @@
 import { ColumnDef } from "@tanstack/react-table"
 import { Button } from "@/components/ui/button"
 import { Pencil, Trash2 } from "lucide-react"
-import { NavigationProps } from "@/types"
+import { NavigationProps } from "@/types/types"
 
 export interface DataTableMeta {
     onEdit: (menu: NavigationProps) => void

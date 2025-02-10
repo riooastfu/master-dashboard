@@ -30,7 +30,7 @@ import {
 import { ChevronDown } from "lucide-react"
 import { DataTableMeta } from "./columns"
 import { DeleteDialog } from "./delete-dialog"
-import { UserProps } from "@/types"
+import { UserProps } from "@/types/types"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 interface DataTableProps {

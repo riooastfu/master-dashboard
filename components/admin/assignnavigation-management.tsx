@@ -23,7 +23,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import { NavigationProps, RoleNavigationProps, RoleProps } from "@/types";
+import { NavigationProps, RoleNavigationProps, RoleProps } from "@/types/types";
 import { getRoles } from "@/actions/admin/role";
 import { assignRoleNavigation, deleteRoleNavigation, getNavigations, getRoleNavigations } from "@/actions/admin/navigation";
 import { type LucideIcon } from "lucide-react";

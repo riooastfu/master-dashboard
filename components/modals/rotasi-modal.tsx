@@ -10,15 +10,16 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { useModalStore } from "@/hooks/use-modal-store"
+import { useMapStore } from "@/hooks/use-map-store"
+
 import { PopmenuSchema } from "@/schemas"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 
 export const RotasiModal = () => {
-    const { isOpen, onClose, type } = useModalStore();
+    const { isOpen, onClose, activeMapType } = useMapStore();
 
-    const isModalOpen = isOpen && type === "rotasi";
+    const isModalOpen = isOpen && activeMapType === "rotasi";
 
     const form = useForm({
         resolver: zodResolver(PopmenuSchema),
