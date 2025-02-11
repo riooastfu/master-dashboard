@@ -45,60 +45,60 @@ const ProduksiMap = () => {
             <div class="max-w-sm">
             <table class="w-full border-collapse" style="border: 1px solid #e5e7eb;">
                 <tr style="background-color: #f9fafb;">
-                    <td class="p-1 text-[12px]" style="border: 1px solid #e5e7eb;"><strong>Estate</strong></td>
-                    <td class="p-1 text-[12px]" style="border: 1px solid #e5e7eb;">${data.estate}</td>
+                    <td class="text-[14px]" style="border: 1px solid #e5e7eb;"><strong>Estate</strong></td>
+                    <td class="text-[14px]" style="border: 1px solid #e5e7eb;">${data.estate}</td>
                 </tr>
                 <tr>
-                    <td class="p-1 text-[12px]" style="border: 1px solid #e5e7eb;"><strong>Divisi</strong></td>
-                    <td class="p-1 text-[12px]" style="border: 1px solid #e5e7eb;">${data.divisi}</td>
+                    <td class="text-[14px]" style="border: 1px solid #e5e7eb;"><strong>Divisi</strong></td>
+                    <td class="text-[14px]" style="border: 1px solid #e5e7eb;">${data.divisi}</td>
                 </tr>
                 <tr style="background-color: #f9fafb;">
-                    <td class="p-1 text-[12px]" style="border: 1px solid #e5e7eb;"><strong>Blok</strong></td>
-                    <td class="p-1 text-[12px]" style="border: 1px solid #e5e7eb;">${data.blok}</td>
+                    <td class="text-[14px]" style="border: 1px solid #e5e7eb;"><strong>Blok</strong></td>
+                    <td class="text-[14px]" style="border: 1px solid #e5e7eb;">${data.blok}</td>
                 </tr>
                 <tr>
-                    <td class="p-1 text-[12px]" style="border: 1px solid #e5e7eb;"><strong>Th Tanam</strong></td>
-                    <td class="p-1 text-[12px]" style="border: 1px solid #e5e7eb;">${data.thn_tanam}</td>
+                    <td class="text-[14px]" style="border: 1px solid #e5e7eb;"><strong>Th Tanam</strong></td>
+                    <td class="text-[14px]" style="border: 1px solid #e5e7eb;">${data.thn_tanam}</td>
+                    </tr>
+                <tr style="background-color: #f9fafb;">
+                    <td class="text-[14px]" style="border: 1px solid #e5e7eb;"><strong>Periode</strong></td>
+                    <td class="text-[14px]" style="border: 1px solid #e5e7eb;">${moment(dateRange?.startDate).format("MMM YYYY")} - ${moment(dateRange?.endDate).format("MMM YYYY")}</td>
                 </tr>
                 <tr style="background-color: #f9fafb;">
-                    <td class="p-1 text-[12px]" style="border: 1px solid #e5e7eb;"><strong>Budget Produksi</strong></td>
-                    <td class="p-1 text-[12px]" style="border: 1px solid #e5e7eb;">${data.budget_produksi} ton</td>
+                    <td class="text-[14px]" style="border: 1px solid #e5e7eb;"><strong>Budget Produksi</strong></td>
+                    <td class="text-[14px]" style="border: 1px solid #e5e7eb;">${data.budget_produksi} ton</td>
+                    </tr>
+                <tr>
+                    <td class="text-[14px]" style="border: 1px solid #e5e7eb;"><strong>Actual Produksi</strong></td>
+                    <td class="text-[14px]" style="border: 1px solid #e5e7eb;">${data.aktual_produksi} ton</td>
+                </tr>
+                <tr style="background-color: #f9fafb;">
+                    <td class="text-[14px]" style="border: 1px solid #e5e7eb;"><strong>Pencapaian</strong></td>
+                    <td class="text-[14px]" style="border: 1px solid #e5e7eb;">${data.pencapaian}%</td>
                 </tr>
                 <tr>
-                    <td class="p-1 text-[12px]" style="border: 1px solid #e5e7eb;"><strong>Actual Produksi</strong></td>
-                    <td class="p-1 text-[12px]" style="border: 1px solid #e5e7eb;">${data.aktual_produksi} ton</td>
+                    <td class="text-[14px]" style="border: 1px solid #e5e7eb;"><strong>Luas Tertanam</strong></td>
+                    <td class="text-[14px]" style="border: 1px solid #e5e7eb;">${data.luas_tanam} ha</td>
                 </tr>
                 <tr style="background-color: #f9fafb;">
-                    <td class="p-1 text-[12px]" style="border: 1px solid #e5e7eb;"><strong>Periode</strong></td>
-                    <td class="p-1 text-[12px]" style="border: 1px solid #e5e7eb;">${moment(dateRange?.startDate).format("MMM YYYY")} - ${moment(dateRange?.endDate).format("MMM YYYY")}</td>
-                </tr>
-                <tr style="background-color: #f9fafb;">
-                    <td class="p-1 text-[12px]" style="border: 1px solid #e5e7eb;"><strong>Pencapaian</strong></td>
-                    <td class="p-1 text-[12px]" style="border: 1px solid #e5e7eb;">${data.pencapaian}%</td>
+                    <td class="text-[14px]" style="border: 1px solid #e5e7eb;"><strong>Ton/ha</strong></td>
+                    <td class="text-[14px]" style="border: 1px solid #e5e7eb;">${data.tonha} ton</td>
                 </tr>
                 <tr>
-                    <td class="p-1 text-[12px]" style="border: 1px solid #e5e7eb;"><strong>SKU</strong></td>
-                    <td class="p-1 text-[12px]" style="border: 1px solid #e5e7eb;">${data.sku}</td>
+                    <td class="text-[14px]" style="border: 1px solid #e5e7eb;"><strong>SKU</strong></td>
+                    <td class="text-[14px]" style="border: 1px solid #e5e7eb;">${data.sku}</td>
                 </tr>
                 <tr style="background-color: #f9fafb;">
-                    <td class="p-1 text-[12px]" style="border: 1px solid #e5e7eb;"><strong>BHL</strong></td>
-                    <td class="p-1 text-[12px]" style="border: 1px solid #e5e7eb;">${data.bhl}</td>
+                    <td class="text-[14px]" style="border: 1px solid #e5e7eb;"><strong>BHL</strong></td>
+                    <td class="text-[14px]" style="border: 1px solid #e5e7eb;">${data.bhl}</td>
                 </tr>
                 <tr>
-                    <td class="p-1 text-[12px]" style="border: 1px solid #e5e7eb;"><strong>HK</strong></td>
-                    <td class="p-1 text-[12px]" style="border: 1px solid #e5e7eb;">${data.hk}</td>
+                    <td class="text-[14px]" style="border: 1px solid #e5e7eb;"><strong>HK</strong></td>
+                    <td class="text-[14px]" style="border: 1px solid #e5e7eb;">${data.hk}</td>
                 </tr>
                 <tr style="background-color: #f9fafb;">
-                    <td class="p-1 text-[12px]" style="border: 1px solid #e5e7eb;"><strong>Ton/HK</strong></td>
-                    <td class="p-1 text-[12px]" style="border: 1px solid #e5e7eb;">${data.tonhk} ton</td>
-                </tr>
-                <tr>
-                    <td class="p-1 text-[12px]" style="border: 1px solid #e5e7eb;"><strong>Luas Tertanam</strong></td>
-                    <td class="p-1 text-[12px]" style="border: 1px solid #e5e7eb;">${data.luas_tanam} ha</td>
-                </tr>
-                <tr style="background-color: #f9fafb;">
-                    <td class="p-1 text-[12px]" style="border: 1px solid #e5e7eb;"><strong>Ton/ha</strong></td>
-                    <td class="p-1 text-[12px]" style="border: 1px solid #e5e7eb;">${data.tonha} ton</td>
+                    <td class="text-[14px]" style="border: 1px solid #e5e7eb;"><strong>Ton/HK</strong></td>
+                    <td class="text-[14px]" style="border: 1px solid #e5e7eb;">${data.tonhk} ton</td>
                 </tr>
             </table>
         </div>
