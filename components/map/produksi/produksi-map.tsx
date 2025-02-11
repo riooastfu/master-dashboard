@@ -43,62 +43,62 @@ const ProduksiMap = () => {
     const renderPopupContent = (data: any) => {
         return `
             <div class="max-w-sm">
-            <table class="w-full border-collapse" style="border: 1px solid #e5e7eb;">
+            <table class="w-full border-collapse" style="border: 1px solid ##3b3b3b;">
                 <tr style="background-color: #f9fafb;">
-                    <td class="text-[14px]" style="border: 1px solid #e5e7eb;"><strong>Estate</strong></td>
-                    <td class="text-[14px]" style="border: 1px solid #e5e7eb;">${data.estate}</td>
+                    <td class="text-[14px]" style="border: 1px solid ##3b3b3b;"><strong>Estate</strong></td>
+                    <td class="text-[14px]" style="border: 1px solid ##3b3b3b;">${data.estate}</td>
                 </tr>
                 <tr>
-                    <td class="text-[14px]" style="border: 1px solid #e5e7eb;"><strong>Divisi</strong></td>
-                    <td class="text-[14px]" style="border: 1px solid #e5e7eb;">${data.divisi}</td>
+                    <td class="text-[14px]" style="border: 1px solid ##3b3b3b;"><strong>Divisi</strong></td>
+                    <td class="text-[14px]" style="border: 1px solid ##3b3b3b;">${data.divisi}</td>
                 </tr>
                 <tr style="background-color: #f9fafb;">
-                    <td class="text-[14px]" style="border: 1px solid #e5e7eb;"><strong>Blok</strong></td>
-                    <td class="text-[14px]" style="border: 1px solid #e5e7eb;">${data.blok}</td>
+                    <td class="text-[14px]" style="border: 1px solid ##3b3b3b;"><strong>Blok</strong></td>
+                    <td class="text-[14px]" style="border: 1px solid ##3b3b3b;">${data.blok}</td>
                 </tr>
                 <tr>
-                    <td class="text-[14px]" style="border: 1px solid #e5e7eb;"><strong>Th Tanam</strong></td>
-                    <td class="text-[14px]" style="border: 1px solid #e5e7eb;">${data.thn_tanam}</td>
+                    <td class="text-[14px]" style="border: 1px solid ##3b3b3b;"><strong>Th Tanam</strong></td>
+                    <td class="text-[14px]" style="border: 1px solid ##3b3b3b;">${data.thn_tanam}</td>
                     </tr>
                 <tr style="background-color: #f9fafb;">
-                    <td class="text-[14px]" style="border: 1px solid #e5e7eb;"><strong>Periode</strong></td>
-                    <td class="text-[14px]" style="border: 1px solid #e5e7eb;">${moment(dateRange?.startDate).format("MMM YYYY")} - ${moment(dateRange?.endDate).format("MMM YYYY")}</td>
+                    <td class="text-[14px]" style="border: 1px solid ##3b3b3b;"><strong>Periode</strong></td>
+                    <td class="text-[14px]" style="border: 1px solid ##3b3b3b;">${moment(dateRange?.startDate).format("MMM YYYY")} - ${moment(dateRange?.endDate).format("MMM YYYY")}</td>
                 </tr>
                 <tr style="background-color: #f9fafb;">
-                    <td class="text-[14px]" style="border: 1px solid #e5e7eb;"><strong>Budget Produksi</strong></td>
-                    <td class="text-[14px]" style="border: 1px solid #e5e7eb;">${data.budget_produksi} ton</td>
+                    <td class="text-[14px]" style="border: 1px solid ##3b3b3b;"><strong>Budget Produksi</strong></td>
+                    <td class="text-[14px]" style="border: 1px solid ##3b3b3b;">${data.budget_produksi} ton</td>
                     </tr>
                 <tr>
-                    <td class="text-[14px]" style="border: 1px solid #e5e7eb;"><strong>Actual Produksi</strong></td>
-                    <td class="text-[14px]" style="border: 1px solid #e5e7eb;">${data.aktual_produksi} ton</td>
+                    <td class="text-[14px]" style="border: 1px solid ##3b3b3b;"><strong>Actual Produksi</strong></td>
+                    <td class="text-[14px]" style="border: 1px solid ##3b3b3b;">${data.aktual_produksi} ton</td>
                 </tr>
                 <tr style="background-color: #f9fafb;">
-                    <td class="text-[14px]" style="border: 1px solid #e5e7eb;"><strong>Pencapaian</strong></td>
-                    <td class="text-[14px]" style="border: 1px solid #e5e7eb;">${data.pencapaian}%</td>
+                    <td class="text-[14px]" style="border: 1px solid ##3b3b3b;"><strong>Pencapaian</strong></td>
+                    <td class="text-[14px]" style="border: 1px solid ##3b3b3b;">${data.pencapaian}%</td>
                 </tr>
                 <tr>
-                    <td class="text-[14px]" style="border: 1px solid #e5e7eb;"><strong>Luas Tertanam</strong></td>
-                    <td class="text-[14px]" style="border: 1px solid #e5e7eb;">${data.luas_tanam} ha</td>
+                    <td class="text-[14px]" style="border: 1px solid ##3b3b3b;"><strong>Luas Tertanam</strong></td>
+                    <td class="text-[14px]" style="border: 1px solid ##3b3b3b;">${data.luas_tanam} ha</td>
                 </tr>
                 <tr style="background-color: #f9fafb;">
-                    <td class="text-[14px]" style="border: 1px solid #e5e7eb;"><strong>Ton/ha</strong></td>
-                    <td class="text-[14px]" style="border: 1px solid #e5e7eb;">${data.tonha} ton</td>
+                    <td class="text-[14px]" style="border: 1px solid ##3b3b3b;"><strong>Ton/ha</strong></td>
+                    <td class="text-[14px]" style="border: 1px solid ##3b3b3b;">${data.tonha} ton</td>
                 </tr>
                 <tr>
-                    <td class="text-[14px]" style="border: 1px solid #e5e7eb;"><strong>SKU</strong></td>
-                    <td class="text-[14px]" style="border: 1px solid #e5e7eb;">${data.sku}</td>
+                    <td class="text-[14px]" style="border: 1px solid ##3b3b3b;"><strong>SKU</strong></td>
+                    <td class="text-[14px]" style="border: 1px solid ##3b3b3b;">${data.sku}</td>
                 </tr>
                 <tr style="background-color: #f9fafb;">
-                    <td class="text-[14px]" style="border: 1px solid #e5e7eb;"><strong>BHL</strong></td>
-                    <td class="text-[14px]" style="border: 1px solid #e5e7eb;">${data.bhl}</td>
+                    <td class="text-[14px]" style="border: 1px solid ##3b3b3b;"><strong>BHL</strong></td>
+                    <td class="text-[14px]" style="border: 1px solid ##3b3b3b;">${data.bhl}</td>
                 </tr>
                 <tr>
-                    <td class="text-[14px]" style="border: 1px solid #e5e7eb;"><strong>HK</strong></td>
-                    <td class="text-[14px]" style="border: 1px solid #e5e7eb;">${data.hk}</td>
+                    <td class="text-[14px]" style="border: 1px solid ##3b3b3b;"><strong>HK</strong></td>
+                    <td class="text-[14px]" style="border: 1px solid ##3b3b3b;">${data.hk}</td>
                 </tr>
                 <tr style="background-color: #f9fafb;">
-                    <td class="text-[14px]" style="border: 1px solid #e5e7eb;"><strong>Ton/HK</strong></td>
-                    <td class="text-[14px]" style="border: 1px solid #e5e7eb;">${data.tonhk} ton</td>
+                    <td class="text-[14px]" style="border: 1px solid ##3b3b3b;"><strong>Ton/HK</strong></td>
+                    <td class="text-[14px]" style="border: 1px solid ##3b3b3b;">${data.tonhk} ton</td>
                 </tr>
             </table>
         </div>
