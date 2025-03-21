@@ -19,6 +19,7 @@ interface MapState {
     selected: Record<string, boolean>;
     layerLabels: Record<MapType, LayerLabels>;
     updateStyles: Record<MapType, ((startDate: string, endDate: string) => Promise<void>) | null>;
+    activityCode: string; // Added activityCode
 }
 
 interface MapActions {
@@ -26,6 +27,7 @@ interface MapActions {
     onOpen: (type: MapType) => void;
     onClose: () => void;
     setDateRange: (range: DateRange) => void;
+    setActivityCode: (code: string) => void; // Added setActivityCode action
     toggleCheckbox: (key: string, childrenKeys?: string[]) => void;
     toggleLayerLabel: (mapType: MapType, labelType: keyof LayerLabels, value: boolean) => void;
     setUpdateStyles: (mapType: MapType, fn: (startDate: string, endDate: string) => Promise<void>) => void;
@@ -38,6 +40,7 @@ export const useMapStore = create<MapStore>((set) => ({
     isOpen: false,
     dateRange: null,
     selected: {},
+    activityCode: "", // Initialize activityCode
     layerLabels: {
         produksi: {
             block: false,
@@ -72,14 +75,10 @@ export const useMapStore = create<MapStore>((set) => ({
     },
 
     setActiveMapType: (type) => set({ activeMapType: type }),
-
-    // Modified onOpen to handle both isOpen and activeMapType
     onOpen: (type) => set({ isOpen: true, activeMapType: type }),
-
-    // Modified onClose to only close the modal without affecting activeMapType
-    onClose: () => set({ isOpen: false }), // Removed setting activeMapType to null
-
+    onClose: () => set({ isOpen: false }),
     setDateRange: (range) => set({ dateRange: range }),
+    setActivityCode: (code) => set({ activityCode: code }), // Add setActivityCode implementation
 
     toggleCheckbox: (key, childrenKeys = []) =>
         set((state) => {

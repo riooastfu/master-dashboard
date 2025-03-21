@@ -31,6 +31,27 @@ export async function getActivity() {
     }
 }
 
+export async function getActivitiesByRole(roleId: number) {
+    try {
+        const session = await getServerSession(authOptions)
+
+        if (!session) {
+            throw new Error("Unauthorized")
+        }
+
+        const response = await serverAxios.get(`/api/aktivitas/role/${roleId}`, {
+            headers: {
+                Authorization: `Bearer ${session.user.token}`
+            }
+        })
+
+        return { data: response.data.data, error: null }
+    } catch (error) {
+        console.error("Error fetching role activities:", error)
+        return { data: null, error: "Failed to fetch role activities" }
+    }
+}
+
 export async function createActivity(activityData: any) {
     try {
         const session = await getServerSession(authOptions)

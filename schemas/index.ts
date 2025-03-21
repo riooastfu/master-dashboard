@@ -38,6 +38,18 @@ export const ProduksiSchema = z.object({
     })
 })
 
+export const AktivitasSchema = z.object({
+    tanggal_mulai: z.date({
+        required_error: "Tanggal Mulai is required",
+        invalid_type_error: "Invalid date",
+    }),
+    tanggal_akhir: z.date({
+        required_error: "Tanggal Akhir is required",
+        invalid_type_error: "Invalid date",
+    }),
+    kode_aktivitas: z.string().min(1, "Kode aktivitas is required")
+})
+
 // Define Zod schema for form validation
 export const userManagementFormSchema = z.object({
     username: z.string()

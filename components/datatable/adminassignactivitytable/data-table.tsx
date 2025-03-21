@@ -37,6 +37,7 @@ interface DataTableProps {
     meta?: {
         onToggleActivity: (activityId: number, activityName: string) => void;
         selectedActivities: number[];
+        loadingActivity?: number | null; // New prop to track which activity is being loaded
     }
 }
 

@@ -10,23 +10,27 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog"
-import { ProduksiSchema } from "@/schemas"
+import { AktivitasSchema } from "@/schemas"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form"
-import { Checkbox } from "../ui/checkbox"
-import { Calendar } from "../ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
 import { cn } from "@/lib/utils"
+import moment from "moment-timezone"
 import { CalendarIcon, Search } from "lucide-react"
-import { useEffect, useState } from "react"
+import { Calendar } from "../ui/calendar"
 import { ScrollArea } from "../ui/scroll-area"
+import { useEffect, useState } from "react"
+import { useSession } from "next-auth/react"
+import { toast } from "sonner"
+import { getCompaniesByRole } from "@/actions/produksi/company"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../ui/accordion"
-import moment from "moment-timezone";
-import { useSession } from "next-auth/react";
-import { getCompaniesByRole } from "@/actions/produksi/company";
-import { toast } from "sonner";
-import { useMapStore } from "@/hooks/map-hooks/use-map-store-compat";
+import { Checkbox } from "../ui/checkbox"
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "../ui/select";
+import { getAktivitasByRole } from "@/actions/aktivitas/aktivitas";
+import { useCommonMapStore } from "@/hooks/map-hooks/common-map-store";
+import { useDateRangeStore } from "@/hooks/map-hooks/date-range-store";
+import { useAktivitasMapStore } from "@/hooks/map-hooks/aktivitas-map-store";
 
 interface PerusahaanProps {
     id: string;
@@ -48,40 +52,41 @@ interface DivisiProps {
     description: string;
 }
 
-export const ProduksiModal = () => {
-    const { data: session } = useSession();
-    const {
-        isOpen,
-        onClose,
-        activeMapType,  // Changed from 'type'
-        selected,
-        toggleCheckbox,
-        updateStyles,
-        setDateRange,
-        dateRange
-    } = useMapStore();  // Changed from useModalStore
+interface AktivitasProps {
+    id: number,
+    kode: string,
+    description: string
+}
 
-    const isModalOpen = isOpen && activeMapType === "produksi";
+export const AktivitasModal = () => {
+    const { data: session } = useSession();
+    const { isOpen, activeMapType, onClose, toggleCheckbox, selected } = useCommonMapStore();
+    const { setDateRange, updateStylesByDateRange } = useDateRangeStore();
+    const { setActivityCode } = useAktivitasMapStore();
 
     const [perusahaan, setPerusahaan] = useState<PerusahaanProps[]>([]);
+    const [aktivitas, setAktivitas] = useState<AktivitasProps[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
-    // Initialize form with existing dateRange if available
-    const form = useForm<z.infer<typeof ProduksiSchema>>({
-        resolver: zodResolver(ProduksiSchema),
+    const isModalOpen = isOpen && activeMapType === "aktivitas";
+
+    const form = useForm<z.infer<typeof AktivitasSchema>>({
+        resolver: zodResolver(AktivitasSchema),
         defaultValues: {
-            tanggal_mulai: dateRange?.startDate || new Date(),
-            tanggal_akhir: dateRange?.endDate || new Date(),
-        }
+            tanggal_mulai: new Date(),
+            tanggal_akhir: new Date(),
+            kode_aktivitas: ''
+        },
     });
 
     const isFormLoading = form.formState.isSubmitting;
 
     const handleClose = () => {
+        form.reset();
         onClose();
     };
 
-    const onSubmit = async (values: z.infer<typeof ProduksiSchema>) => {
+    const onSubmit = async (values: z.infer<typeof AktivitasSchema>) => {
         try {
             const startDate = moment(values.tanggal_mulai);
             const endDate = moment(values.tanggal_akhir);
@@ -94,24 +99,27 @@ export const ProduksiModal = () => {
                 return;
             }
 
+            // Set both date range and activity code
             setDateRange({
                 startDate: values.tanggal_mulai,
                 endDate: values.tanggal_akhir
             });
 
-            // Use the new updateStyles structure
-            if (updateStyles.produksi) {
-                await updateStyles.produksi(
-                    startDate.format('YYYYMM'),
-                    endDate.format('YYYYMM')
-                );
-            }
+            setActivityCode(values.kode_aktivitas);
+
+            // Update styles using the new method
+            await updateStylesByDateRange(
+                'aktivitas',
+                startDate.format('YYYYMM'),
+                endDate.format('YYYYMM')
+            );
 
             onClose();
         } catch (error) {
             console.error('Error updating map:', error);
+            toast.error('Failed to update map');
         }
-    };
+    }
 
     const fetchData = async () => {
         setIsLoading(true);
@@ -123,43 +131,45 @@ export const ProduksiModal = () => {
 
             const perusahaan = session.user.perusahaanId;
             const role = session.user.role;
+            const roleId = session.user.roleId;
 
-            const [perusahaanData] = await Promise.all([
+            const [perusahaanData, aktivitasData] = await Promise.all([
                 getCompaniesByRole(perusahaan, role),
+                getAktivitasByRole(roleId)
             ]);
 
             if (perusahaanData.data) {
-                setPerusahaan(perusahaanData.data)
+                setPerusahaan(perusahaanData.data);
             }
-
+            if (aktivitasData.data) {
+                setAktivitas(aktivitasData.data);
+            }
         } catch (error) {
             if (error instanceof Error) {
                 toast.error(error.message);
             } else {
                 toast.error('Failed to fetch data. Please try again.');
             }
-        }
-        finally {
+        } finally {
             setIsLoading(false);
         }
     };
 
     useEffect(() => {
-        if (session?.user) {  // Only fetch when session is available
+        if (isModalOpen) {
             fetchData();
         }
-    }, [session]);
+    }, [isModalOpen, session]);
 
     return (
         <Dialog open={isModalOpen} onOpenChange={handleClose}>
             <DialogContent className="bg-white text-black p-0 overflow-hidden">
                 <DialogHeader className="pt-8 px-6">
                     <DialogTitle className="text-2xl text-center">
-                        Produksi
+                        Aktivitas
                     </DialogTitle>
                     <DialogDescription className="text-center text-zinc-500">
-                        Produksi kebun
-
+                        Aktivitas kebun
                     </DialogDescription>
                 </DialogHeader>
 
@@ -196,13 +206,13 @@ export const ProduksiModal = () => {
                                                 </PopoverTrigger>
                                                 <PopoverContent className="w-auto p-0" align="end">
                                                     <Calendar
-                                                        onChange={(field.onChange)}
+                                                        onChange={field.onChange}
                                                         value={field.value}
                                                         maxDate={new Date()}
                                                     />
                                                 </PopoverContent>
                                             </Popover>
-                                            <FormMessage></FormMessage>
+                                            <FormMessage />
                                         </FormItem>
                                     )}
                                 />
@@ -236,17 +246,51 @@ export const ProduksiModal = () => {
                                                 </PopoverTrigger>
                                                 <PopoverContent className="w-auto p-0" align="end">
                                                     <Calendar
-                                                        onChange={(field.onChange)}
+                                                        onChange={field.onChange}
                                                         value={field.value}
                                                         maxDate={new Date()}
                                                     />
                                                 </PopoverContent>
                                             </Popover>
-                                            <FormMessage></FormMessage>
+                                            <FormMessage />
                                         </FormItem>
                                     )}
                                 />
                             </div>
+
+                            <FormField
+                                control={form.control}
+                                name="kode_aktivitas"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel className="text-xs font-bold text-zinc-500">
+                                            Kode Aktivitas
+                                        </FormLabel>
+                                        <Select
+                                            onValueChange={field.onChange}
+                                            value={field.value}
+                                        >
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Select aktivitas" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectGroup>
+                                                    <SelectLabel>Kode Aktivitas</SelectLabel>
+                                                    {aktivitas.map((aktivitas) => (
+                                                        <SelectItem
+                                                            key={aktivitas.id}
+                                                            value={aktivitas.kode}
+                                                        >
+                                                            {aktivitas.kode} - {aktivitas.description}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectGroup>
+                                            </SelectContent>
+                                        </Select>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
 
                             <ScrollArea className="h-52">
                                 {isLoading ? (
@@ -357,28 +401,21 @@ export const ProduksiModal = () => {
                                                         </AccordionContent>
                                                     </AccordionItem>
                                                 </Accordion>
-
                                             );
                                         })}
-
-                                        {/* <p>{`${moment(dateRange?.startDate).format('DD MMM YYYY')}, ${moment(dateRange?.endDate).format('DD MMM YYYY')}`}</p> */}
-                                        {/* <pre>{JSON.stringify(selected, null, 2)}</pre> */}
                                     </div>
                                 )}
-
                             </ScrollArea>
-
                         </div>
                         <DialogFooter className="bg-gray-100 px-6 py-4">
                             <Button type="submit" variant="default" disabled={isFormLoading}>
                                 Cari
-                                <Search size={15} />
+                                <Search className="ml-2" size={15} />
                             </Button>
                         </DialogFooter>
                     </form>
                 </Form>
-
             </DialogContent>
         </Dialog>
-    )
+    );
 }

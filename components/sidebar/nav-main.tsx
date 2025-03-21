@@ -2,13 +2,7 @@
 
 import {
     SidebarGroup,
-    SidebarGroupLabel,
     SidebarMenu,
-    SidebarMenuButton,
-    SidebarMenuItem,
-    SidebarMenuSub,
-    SidebarMenuSubButton,
-    SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
 import { usePathname } from "next/navigation";
 import { useMainMenu } from "@/hooks/use-main-menu";

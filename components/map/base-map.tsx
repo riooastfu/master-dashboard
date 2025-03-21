@@ -4,17 +4,24 @@ import { Loader2 } from 'lucide-react';
 import CustomMapContainer from '../leaflet/map';
 import LayerControl from './layer-control';
 import ModalButton from '../modals/modal-button';
-import { MapType, useMapStore } from '@/hooks/use-map-store';
 import { PathOptions } from 'leaflet';
 import { coordinateMap } from './config-map';
 import PrintMapButton from '../leaflet/print-map';
 import MapLegend from '../leaflet/map-legend';
+import { renderPopupContent } from './popup-renderer';
+import { MapType } from '@/types/map-types';
+
+// Import the specific stores
+import { useCommonMapStore } from '@/hooks/map-hooks/common-map-store';
+import { useDateRangeStore } from '@/hooks/map-hooks/date-range-store';
+import { useLayerLabelsStore } from '@/hooks/map-hooks/layer-labels-store';
+import { useAktivitasMapStore } from '@/hooks/map-hooks/aktivitas-map-store';
 
 interface BaseMapProps {
     mapType: MapType;
     geoJsonData: any;
     fetchPopupData: (costCenter: string, dateRange: any) => Promise<any>;
-    renderPopupContent: (data: any) => string;
+    renderPopupContent?: (data: any) => string;
     getLayerColor: (properties: any) => Promise<string>;
 }
 
@@ -32,7 +39,7 @@ export const BaseMap: React.FC<BaseMapProps> = ({
     mapType,
     geoJsonData,
     fetchPopupData,
-    renderPopupContent,
+    renderPopupContent: customRenderPopupContent,
     getLayerColor,
 }) => {
     const [isLoading, setIsLoading] = useState(false);
@@ -41,20 +48,16 @@ export const BaseMap: React.FC<BaseMapProps> = ({
     const [labelGroups, setLabelGroups] = useState<any[]>([]);
     const geoJsonRef = useRef<any>(null);
 
-    const {
-        selected,
-        dateRange,
-        layerLabels,
-        toggleLayerLabel,
-        setActiveMapType
-    } = useMapStore();
+    // Use the separated stores
+    const { selected, activeMapType, setActiveMapType } = useCommonMapStore();
+    const { dateRange } = useDateRangeStore();
+    const { layerLabels, toggleLayerLabel } = useLayerLabelsStore();
+    const { activityCode } = useAktivitasMapStore();
 
     // Set active map type when component mounts
     useEffect(() => {
         setActiveMapType(mapType);
-        // Only clear the active map type when the component is unmounting completely
         return () => {
-            // Check if we're really unmounting vs just closing the modal
             if (!document.querySelector('[data-map-container]')) {
                 setActiveMapType(null);
             }
@@ -133,6 +136,20 @@ export const BaseMap: React.FC<BaseMapProps> = ({
         setLabelGroups(newLabelGroups);
     }, [geoJsonData, selected, layerLabels, mapType]);
 
+    // In base-map.tsx
+    useEffect(() => {
+        setLayerColors({});
+
+        // Force GeoJSON to rerender by clearing and setting its reference
+        if (geoJsonRef.current) {
+            const tempRef = geoJsonRef.current;
+            geoJsonRef.current = null;
+            setTimeout(() => {
+                geoJsonRef.current = tempRef;
+            }, 0);
+        }
+    }, [mapType]);
+
     // Style handler for GeoJSON
     const setColor = useCallback((feature: any): PathOptions => {
         return layerColors[feature.properties.COSTCENTER] || {
@@ -151,7 +168,15 @@ export const BaseMap: React.FC<BaseMapProps> = ({
         const estateKey = `checkbox-${pt}-${estate}`;
         const divisiKey = `checkbox-${pt}-${estate}-${divisi}`;
 
-        return selected[ptKey] || selected[estateKey] || selected[divisiKey] || false;
+        // If nothing is selected at all, show nothing
+        if (Object.keys(selected).length === 0) {
+            return false;
+        }
+
+        // Only show features that have an explicitly checked selection
+        return selected[ptKey] === true ||
+            selected[estateKey] === true ||
+            selected[divisiKey] === true;
     }, [selected]);
 
     // Popup handler
@@ -162,14 +187,22 @@ export const BaseMap: React.FC<BaseMapProps> = ({
                 try {
                     const data = await fetchPopupData(feature.properties.COSTCENTER, dateRange);
                     if (data) {
-                        layer.bindPopup(renderPopupContent(data)).openPopup();
+                        // Use the imported renderPopupContent function, with fallback to custom renderer
+                        const content = renderPopupContent(
+                            data,
+                            mapType,
+                            dateRange,
+                            activityCode,
+                            customRenderPopupContent
+                        );
+                        layer.bindPopup(content).openPopup();
                     }
                 } finally {
                     setIsFetchingPopup(false);
                 }
             },
         });
-    }, [dateRange, fetchPopupData, renderPopupContent]);
+    }, [dateRange, fetchPopupData, mapType, activityCode, customRenderPopupContent]);
 
     // Selected coordinates for map navigation
     const selectedCoordinates = useMemo(() =>
@@ -199,7 +232,7 @@ export const BaseMap: React.FC<BaseMapProps> = ({
                 className="m-3 top-0 right-0 z-[1000] absolute"
             />
 
-            <PrintMapButton className="m-3 top-12 right-0 z-[1000] absolute" />
+            <PrintMapButton className="m-3 top-10 right-0 z-[1000] absolute" />
 
             <LayerControl
                 title="Map Labels"
@@ -215,7 +248,7 @@ export const BaseMap: React.FC<BaseMapProps> = ({
 
             <FeatureGroup>
                 <GeoJSON
-                    key={`${JSON.stringify(selected)}-${dateRange?.startDate}-${dateRange?.endDate}`}
+                    key={`${activeMapType}-${JSON.stringify(selected)}-${dateRange?.startDate}-${dateRange?.endDate}-${mapType}`}
                     data={geoJsonData}
                     style={setColor}
                     filter={filterFeatures}

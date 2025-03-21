@@ -1,7 +1,8 @@
 import React from 'react';
 import { Card } from '@/components/ui/card';
 import { Toggle } from '../ui/toggle';
-import { MapType, useMapStore } from '@/hooks/use-map-store';
+import { MapType } from '@/types/map-types';
+import { useMapStore } from '@/hooks/map-hooks/use-map-store-compat';
 import { ColorRange, MAP_CONFIGS } from '@/types/map-types';
 import { Eye, EyeClosed, EyeOff } from 'lucide-react';
 
@@ -17,8 +18,7 @@ const getLegendLabel = (range: ColorRange, suffix: string): string => {
 
 const MapLegend: React.FC<MapLegendProps> = ({ className = "" }) => {
     const [isVisible, setIsVisible] = React.useState(true);
-    const activeMapType = useMapStore(state => state.activeMapType);
-    const isOpen = useMapStore(state => state.isOpen);
+    const { activeMapType, isOpen } = useMapStore();
 
     // Modified condition: Use the map type even when modal is closed
     const mapConfig = activeMapType ? MAP_CONFIGS[activeMapType] : null;

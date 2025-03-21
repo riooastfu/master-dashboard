@@ -1,5 +1,7 @@
 // types/map-types.ts
 
+export type MapType = "produksi" | "rotasi" | "aktivitas";
+
 export type ColorRange = {
     min: number;
     max: number;
@@ -28,6 +30,15 @@ export const ROTATION_COLOR_RANGES: ColorRanges = {
     COMPLETED: { min: 75, max: Infinity, color: "#4caf50" }
 };
 
+export const ACTIVITY_COLOR_RANGES: ColorRanges = {
+    ZERO: { min: -Infinity, max: 0, color: "#FFF" },
+    LOW: { min: 0, max: 79.99, color: "#f55142" },
+    MEDIUM: { min: 80, max: 89.99, color: "#f752b0" },
+    HIGH: { min: 90, max: 99.99, color: "#f5d742" },
+    VERY_HIGH: { min: 100, max: 109.99, color: "#42adf5" },
+    EXCEPTIONAL: { min: 110, max: Infinity, color: "#9cf542" }
+}
+
 // Map configuration type
 export type MapConfig = {
     colorRanges: ColorRanges;
@@ -45,6 +56,11 @@ export const MAP_CONFIGS: Record<string, MapConfig> = {
     rotasi: {
         colorRanges: ROTATION_COLOR_RANGES,
         title: "Rotation Progress",
+        suffix: "%"
+    },
+    aktivitas: {
+        colorRanges: ACTIVITY_COLOR_RANGES,
+        title: "Aktivitas",
         suffix: "%"
     }
 };
