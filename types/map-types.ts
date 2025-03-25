@@ -15,7 +15,7 @@ export type ColorRanges = {
 // Production map color ranges
 export const PRODUCTION_COLOR_RANGES: ColorRanges = {
     ZERO: { min: -Infinity, max: 0, color: "#FFF" },
-    LOW: { min: 0, max: 79.99, color: "#f55142" },
+    LOW: { min: 0.1, max: 79.99, color: "#f55142" },
     MEDIUM: { min: 80, max: 89.99, color: "#f752b0" },
     HIGH: { min: 90, max: 99.99, color: "#f5d742" },
     VERY_HIGH: { min: 100, max: 109.99, color: "#42adf5" },
@@ -24,19 +24,21 @@ export const PRODUCTION_COLOR_RANGES: ColorRanges = {
 
 // Rotation map color ranges (you can adjust these values as needed)
 export const ROTATION_COLOR_RANGES: ColorRanges = {
-    NOT_STARTED: { min: -Infinity, max: 0, color: "#FFF" },
-    IN_PROGRESS: { min: 0, max: 50, color: "#ffeb3b" },
-    NEARING_COMPLETION: { min: 50, max: 75, color: "#ff9800" },
-    COMPLETED: { min: 75, max: Infinity, color: "#4caf50" }
-};
+    // ZERO: { min: -Infinity, max: 0, color: "#FFF" },
+    LOW: { min: 0, max: 1, color: "#9cf542" },
+    MEDIUM: { min: 2, max: 3, color: "#42adf5" },
+    HIGH: { min: 4, max: 5, color: "#f5d742" },
+    VERY_HIGH: { min: 6, max: 7, color: "#f752b0" },
+    EXCEPTIONAL: { min: 8, max: Infinity, color: "#f55142" }
+}
 
 export const ACTIVITY_COLOR_RANGES: ColorRanges = {
     ZERO: { min: -Infinity, max: 0, color: "#FFF" },
-    LOW: { min: 0, max: 79.99, color: "#f55142" },
-    MEDIUM: { min: 80, max: 89.99, color: "#f752b0" },
+    LOW: { min: 0.1, max: 79.99, color: "#9cf542" },
+    MEDIUM: { min: 80, max: 89.99, color: "#42adf5" },
     HIGH: { min: 90, max: 99.99, color: "#f5d742" },
-    VERY_HIGH: { min: 100, max: 109.99, color: "#42adf5" },
-    EXCEPTIONAL: { min: 110, max: Infinity, color: "#9cf542" }
+    VERY_HIGH: { min: 100, max: 109.99, color: "#f752b0" },
+    EXCEPTIONAL: { min: 110, max: Infinity, color: "#f55142" }
 }
 
 // Map configuration type
@@ -50,13 +52,13 @@ export type MapConfig = {
 export const MAP_CONFIGS: Record<string, MapConfig> = {
     produksi: {
         colorRanges: PRODUCTION_COLOR_RANGES,
-        title: "Production Achievement",
+        title: "Produksi",
         suffix: "%"
     },
     rotasi: {
         colorRanges: ROTATION_COLOR_RANGES,
-        title: "Rotation Progress",
-        suffix: "%"
+        title: "Rotasi",
+        suffix: " hari"
     },
     aktivitas: {
         colorRanges: ACTIVITY_COLOR_RANGES,

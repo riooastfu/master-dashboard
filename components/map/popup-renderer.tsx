@@ -41,7 +41,7 @@ const generateCommonHeader = (data: any, dateRange: any) => {
         </tr>
         <tr>
             <td class="text-[14px]" style="border: 1px solid #3b3b3b;"><strong>Divisi</strong></td>
-            <td class="text-[14px]" style="border: 1px solid #3b3b3b;">${data.divisi}</td>
+            <td class="text-[14px]" style="border: 1px solid #3b3b3b;">DIV ${data.divisi}</td>
         </tr>
         <tr style="background-color: #d4d4d4;">
             <td class="text-[14px]" style="border: 1px solid #3b3b3b;"><strong>Blok</strong></td>
@@ -161,6 +161,10 @@ const renderAktivitasPopup = (data: any, dateRange: any, activityCode: string) =
                     <td class="text-[14px]" style="border: 1px solid #3b3b3b;">${data.activity}</td>
                 </tr>
                 <tr style="background-color: #d4d4d4;">
+                    <td class="text-[14px]" style="border: 1px solid #3b3b3b;"><strong>Deskripsi</strong></td>
+                    <td class="text-[14px]" style="border: 1px solid #3b3b3b;">${data.activity_desc}</td>
+                </tr>
+                <tr style="background-color: #d4d4d4;">
                     <td class="text-[14px]" style="border: 1px solid #3b3b3b;"><strong>Budget HK</strong></td>
                     <td class="text-[14px]" style="border: 1px solid #3b3b3b;">${data.budgethk}</td>
                 </tr>
@@ -174,11 +178,11 @@ const renderAktivitasPopup = (data: any, dateRange: any, activityCode: string) =
                 </tr>
                 <tr style="background-color: #d4d4d4;">
                     <td class="text-[14px]" style="border: 1px solid #3b3b3b;"><strong>Budget HK/ha</strong></td>
-                    <td class="text-[14px]" style="border: 1px solid #3b3b3b;">${data.budgethkha}%</td>
+                    <td class="text-[14px]" style="border: 1px solid #3b3b3b;">${data.budgethkha}</td>
                 </tr>
                 <tr style="background-color: #d4d4d4;">
                     <td class="text-[14px]" style="border: 1px solid #3b3b3b;"><strong>Aktual HK/ha</strong></td>
-                    <td class="text-[14px]" style="border: 1px solid #3b3b3b;">${data.actualhkha}%</td>
+                    <td class="text-[14px]" style="border: 1px solid #3b3b3b;">${data.actualhkha}</td>
                 </tr>
         </div>
     `;

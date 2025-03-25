@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { ProduksiModal } from "../modals/produksi-modal";
-// import { RotasiModal } from "../modals/rotasi-modal";
+import { RotasiModal } from "../modals/rotasi-modal";
 import { AktivitasModal } from "../modals/aktivitas-modal";
 
 export const ModalProvider = () => {
@@ -19,7 +19,7 @@ export const ModalProvider = () => {
     return (
         <>
             <ProduksiModal />
-            {/* <RotasiModal /> */}
+            <RotasiModal />
             <AktivitasModal />
         </>
     );

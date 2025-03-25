@@ -3,7 +3,7 @@
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/auth"
 import axios from "axios"
-import { MapType } from "@/hooks/use-map-store"
+import { MapType } from "@/types/map-types"
 
 const serverAxios = axios.create({
     baseURL: process.env.NEXT_PUBLIC_BASE_URL,

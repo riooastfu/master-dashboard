@@ -3,7 +3,7 @@
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/auth"
 import axios from "axios"
-import { MapType } from "@/hooks/use-map-store"
+import { MapType } from "@/types/map-types"
 
 // Create a single instance of axios to use across all API calls
 const serverAxios = axios.create({

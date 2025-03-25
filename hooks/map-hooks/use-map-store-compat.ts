@@ -49,7 +49,8 @@ export const useMapStore = () => {
         updateStyles: {
             produksi: async (startDate: string, endDate: string) =>
                 dateRange.updateStylesByDateRange('produksi', startDate, endDate),
-            rotasi: null,
+            rotasi: async (startDate: string, endDate: string) =>
+                dateRange.updateStylesByDateRange('rotasi', startDate, endDate),
             aktivitas: async (startDate: string, endDate: string) =>
                 dateRange.updateStylesByDateRange('aktivitas', startDate, endDate),
         },

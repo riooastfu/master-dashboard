@@ -38,6 +38,17 @@ export const ProduksiSchema = z.object({
     })
 })
 
+export const RotasiSchema = z.object({
+    tanggal_mulai: z.date({
+        required_error: "Tanggal Mulai is required",
+        invalid_type_error: "Invalid date",
+    }),
+    tanggal_akhir: z.date({
+        required_error: "Tanggal Akhir is required",
+        invalid_type_error: "Invalid date",
+    })
+})
+
 export const AktivitasSchema = z.object({
     tanggal_mulai: z.date({
         required_error: "Tanggal Mulai is required",
