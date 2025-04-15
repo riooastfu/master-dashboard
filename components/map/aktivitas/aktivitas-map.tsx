@@ -4,9 +4,8 @@ import React, { useCallback, useEffect, useRef } from 'react'
 import BaseMap from '../base-map'
 import maplayer from '@/public/geojson/map.json';
 import moment from 'moment-timezone';
-import useAxiosAuth from '@/hooks/use-axios-auth';
 import { ACTIVITY_COLOR_RANGES } from '@/types/map-types';
-import { getPersentase } from '@/actions/aktivitas/aktivitas';
+import { getPersentase, getPopUpData } from '@/actions/gis/aktivitas/aktivitas';
 
 // Import the specific stores needed
 import { useDateRangeStore } from '@/hooks/map-hooks/date-range-store';
@@ -20,7 +19,6 @@ const getColorByPercentage = (percentage: number): string => {
 };
 
 const AktivitasMap = () => {
-    const axiosAuth = useAxiosAuth();
 
     // Use specific stores instead of the monolithic store
     const { dateRange } = useDateRangeStore();
@@ -35,10 +33,7 @@ const AktivitasMap = () => {
         const tglAkhir = moment(dateRange.endDate).format("YYYYMM");
 
         try {
-            const response = await axiosAuth.post(
-                `${process.env.NEXT_PUBLIC_BASE_URL}/api/aktivitas/popup`,
-                { fullBlockCode: costCenter, tglAwal, tglAkhir, activityCode }
-            );
+            const response = await getPopUpData(costCenter, tglAwal, tglAkhir, activityCode);
             return response.data.data;
         } catch (error) {
             console.error("Error fetching popup data:", error);

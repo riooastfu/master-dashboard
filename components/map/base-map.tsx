@@ -29,7 +29,7 @@ const FlyToOnCheckbox = ({ coords }: { coords: [number, number] }) => {
     const map = useMap();
     useEffect(() => {
         if (coords) {
-            map.flyTo(coords, 12);
+            map.flyTo(coords, 10);
         }
     }, [coords, map]);
     return null;
@@ -235,9 +235,9 @@ export const BaseMap: React.FC<BaseMapProps> = ({
             <PrintMapButton className="m-3 top-10 right-0 z-[1000] absolute" />
 
             <LayerControl
-                title="Map Labels"
+                title="Label Peta"
                 layers={[
-                    { id: 'block', label: 'Block Numbers', isVisible: layerLabels[mapType].block }
+                    { id: 'block', label: 'Nomor Blok', isVisible: layerLabels[mapType].block }
                 ]}
                 onToggle={(id, value) => toggleLayerLabel(mapType, id as keyof typeof layerLabels[typeof mapType], value)}
             />

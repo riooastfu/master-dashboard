@@ -24,7 +24,7 @@ import { ScrollArea } from "../ui/scroll-area"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../ui/accordion"
 import moment from "moment-timezone";
 import { useSession } from "next-auth/react";
-import { getCompaniesByRole } from "@/actions/produksi/company";
+import { getCompaniesByRole } from "@/actions/gis/produksi/company";
 import { toast } from "sonner";
 import { useMapStore } from "@/hooks/map-hooks/use-map-store-compat";
 

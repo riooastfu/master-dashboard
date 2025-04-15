@@ -23,11 +23,11 @@ import { ScrollArea } from "../ui/scroll-area"
 import { useEffect, useState } from "react"
 import { useSession } from "next-auth/react"
 import { toast } from "sonner"
-import { getCompaniesByRole } from "@/actions/produksi/company"
+import { getCompaniesByRole } from "@/actions/gis/produksi/company"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../ui/accordion"
 import { Checkbox } from "../ui/checkbox"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "../ui/select";
-import { getAktivitasByRole } from "@/actions/aktivitas/aktivitas";
+import { getAktivitasByRole } from "@/actions/gis/aktivitas/aktivitas";
 import { useCommonMapStore } from "@/hooks/map-hooks/common-map-store";
 import { useDateRangeStore } from "@/hooks/map-hooks/date-range-store";
 import { useAktivitasMapStore } from "@/hooks/map-hooks/aktivitas-map-store";

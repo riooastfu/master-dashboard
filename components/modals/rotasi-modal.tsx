@@ -1,5 +1,5 @@
 import * as z from "zod";
-import { getCompaniesByRole } from "@/actions/produksi/company"
+import { getCompaniesByRole } from "@/actions/gis/produksi/company"
 import {
     Dialog,
     DialogContent,

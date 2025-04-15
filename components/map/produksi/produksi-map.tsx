@@ -3,14 +3,12 @@
 import React, { useCallback, useEffect, useRef } from 'react';
 import moment from 'moment-timezone';
 import BaseMap from '../base-map';
-import { getPersentase } from '@/actions/produksi';
+import { getPersentase, getPopUpData } from '@/actions/gis/produksi/produksi';
 import maplayer from '@/public/geojson/map.json';
 import { useMapStore } from '@/hooks/map-hooks/use-map-store-compat';
-import useAxiosAuth from '@/hooks/use-axios-auth';
 import { PRODUCTION_COLOR_RANGES } from '@/types/map-types';
 
 const ProduksiMap = () => {
-    const axiosAuth = useAxiosAuth();
     const { dateRange } = useMapStore();
     const colorCache = useRef<Map<string, string>>(new Map());
 
@@ -22,10 +20,7 @@ const ProduksiMap = () => {
         const tglAkhir = moment(dateRange.endDate).format("YYYYMM");
 
         try {
-            const response = await axiosAuth.post(
-                `${process.env.NEXT_PUBLIC_BASE_URL}/api/produksi/produksi/popup`,
-                { fullBlockCode: costCenter, tglAwal, tglAkhir }
-            );
+            const response = await getPopUpData(costCenter, tglAwal, tglAkhir)
             return response.data.data;
         } catch (error) {
             console.error("Error fetching popup data:", error);
@@ -53,7 +48,7 @@ const ProduksiMap = () => {
                 moment(dateRange.endDate).format("YYYYMM")
             );
 
-            const color = getColorByPercentage(percentage);
+            const color = getColorByPercentage(percentage.data);
             colorCache.current.set(cacheKey, color);
             return color;
         } catch (error) {

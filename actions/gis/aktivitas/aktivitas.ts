@@ -3,7 +3,6 @@
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/auth"
 import axios from "axios"
-import { MapType } from "@/types/map-types"
 
 const serverAxios = axios.create({
     baseURL: process.env.NEXT_PUBLIC_BASE_URL,
@@ -64,60 +63,25 @@ export const getPersentase = async (fullBlockCode: string, tanggal_mulai: string
     }
 }
 
-// New function to fetch popup data based on map type
-export const fetchPopupDataByMapType = async (
-    fullBlockCode: string,
-    tanggal_mulai: string,
-    tanggal_akhir: string,
-    mapType: MapType,
-    activityCode?: string
-) => {
+export const getPopUpData = async (fullBlockCode: string, tglAwal: string, tglAkhir: string, activityCode: string) => {
     try {
-        const session = await getServerSession(authOptions);
+        const session = await getServerSession(authOptions)
 
         if (!session) {
-            throw new Error("Unauthorized");
+            throw new Error("Unauthorized")
         }
 
-        let endpoint = '';
-        const payload: any = {
+        const response = await serverAxios.post(`/api/aktivitas/popup`, {
             fullBlockCode,
-            tglAwal: tanggal_mulai,
-            tglAkhir: tanggal_akhir
-        };
-
-        // Set the appropriate endpoint based on map type
-        switch (mapType) {
-            case 'produksi':
-                endpoint = '/api/produksi/produksi/popup';
-                break;
-            case 'rotasi':
-                endpoint = '/api/rotasi/popup';
-                break;
-            case 'aktivitas':
-                endpoint = '/api/aktivitas/popup';
-                // Add activity code for aktivitas map type
-                if (activityCode) {
-                    payload.activityCode = activityCode;
-                }
-                break;
-            default:
-                endpoint = '/api/produksi/produksi/popup';
+            tglAwal,
+            tglAkhir,
+            activityCode
         }
-
-        const response = await serverAxios.post(
-            endpoint,
-            payload,
-            {
-                headers: {
-                    Authorization: `Bearer ${session.user.token}`
-                }
-            }
         );
 
-        return response.data.data;
+        return { data: response.data.data, error: null }
     } catch (error) {
-        console.error(`Error fetching popup data for ${mapType}:`, error);
-        return null;
+        console.error("Error fetching popup data:", error);
+        return { data: null, error: "Failed to fetch popup data" }
     }
 }

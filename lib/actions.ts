@@ -2,7 +2,6 @@ import z from "zod";
 import axios from "axios";
 import { LoginSchema } from "@/schemas";
 import { signIn, signOut } from "next-auth/react";
-import { cookies } from "next/headers";
 
 export const login = async (values: z.infer<typeof LoginSchema>) => {
     const validatedFields = LoginSchema.safeParse(values);

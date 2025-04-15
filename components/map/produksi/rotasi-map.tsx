@@ -5,12 +5,10 @@ import moment from 'moment-timezone';
 import BaseMap from '../base-map';
 import maplayer from '@/public/geojson/map.json';
 import { useMapStore } from '@/hooks/map-hooks/use-map-store-compat';
-import useAxiosAuth from '@/hooks/use-axios-auth';
 import { ROTATION_COLOR_RANGES } from '@/types/map-types';
-import { getDataRotasi } from '@/actions/rotasi/rotasi';
+import { getDataRotasi, getPopUpData } from '@/actions/gis/rotasi/rotasi';
 
 const RotasiMap = () => {
-    const axiosAuth = useAxiosAuth();
     const { dateRange } = useMapStore();
     const colorCache = useRef<Map<string, string>>(new Map());
 
@@ -21,10 +19,8 @@ const RotasiMap = () => {
         const tglAwal = moment(dateRange.startDate).format("YYYYMM");
 
         try {
-            const response = await axiosAuth.post(
-                `${process.env.NEXT_PUBLIC_BASE_URL}/api/rotasi`,
-                { fullBlockCode: costCenter, tglAwal }
-            );
+            const response = await getPopUpData(costCenter, tglAwal)
+
             return response.data;
         } catch (error) {
             console.error("Error fetching popup data:", error);
@@ -60,7 +56,7 @@ const RotasiMap = () => {
             console.error("Error getting hari belum panen:", error);
             return ROTATION_COLOR_RANGES.ZERO.color;
         }
-    }, [dateRange, axiosAuth]);
+    }, [dateRange]);
 
     // Helper to get color based on Total_Hari_Belum_Panen
     const getColorByHariBelumPanen = (hariBelumPanen: number): string => {
