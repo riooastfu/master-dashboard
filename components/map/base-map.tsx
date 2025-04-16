@@ -29,7 +29,7 @@ const FlyToOnCheckbox = ({ coords }: { coords: [number, number] }) => {
     const map = useMap();
     useEffect(() => {
         if (coords) {
-            map.flyTo(coords, 10);
+            map.flyTo(coords, 13);
         }
     }, [coords, map]);
     return null;
@@ -186,6 +186,7 @@ export const BaseMap: React.FC<BaseMapProps> = ({
                 setIsFetchingPopup(true);
                 try {
                     const data = await fetchPopupData(feature.properties.COSTCENTER, dateRange);
+                    console.log("data>> ", data);
                     if (data) {
                         // Use the imported renderPopupContent function, with fallback to custom renderer
                         const content = renderPopupContent(

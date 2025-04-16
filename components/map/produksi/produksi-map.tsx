@@ -21,7 +21,7 @@ const ProduksiMap = () => {
 
         try {
             const response = await getPopUpData(costCenter, tglAwal, tglAkhir)
-            return response.data.data;
+            return response.data;
         } catch (error) {
             console.error("Error fetching popup data:", error);
             return null;

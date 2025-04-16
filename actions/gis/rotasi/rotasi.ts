@@ -41,7 +41,7 @@ export const getPopUpData = async (fullBlockCode: string, tglAwal: string) => {
             throw new Error("Unauthorized")
         }
 
-        const response = await serverAxios.post(`/api/rotasi`, {
+        const response = await serverAxios.post(`/api/rotasi/popup`, {
             fullBlockCode,
             tglAwal
         });

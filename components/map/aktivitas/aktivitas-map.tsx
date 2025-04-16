@@ -34,7 +34,7 @@ const AktivitasMap = () => {
 
         try {
             const response = await getPopUpData(costCenter, tglAwal, tglAkhir, activityCode);
-            return response.data.data;
+            return response.data;
         } catch (error) {
             console.error("Error fetching popup data:", error);
             return null;

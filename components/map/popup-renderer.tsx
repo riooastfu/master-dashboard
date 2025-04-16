@@ -120,20 +120,12 @@ const renderRotasiPopup = (data: any, dateRange: any) => {
                     <td class="text-[14px]" style="border: 1px solid #3b3b3b;">${data.luas_tanam} ha</td>
                 </tr>
                 <tr>
-                    <td class="text-[14px]" style="border: 1px solid #3b3b3b;"><strong>Rotasi Ke</strong></td>
-                    <td class="text-[14px]" style="border: 1px solid #3b3b3b;">${data.rotasi || 'N/A'}</td>
+                    <td class="text-[14px]" style="border: 1px solid #3b3b3b;"><strong>Tanggal Terkahir Panen</strong></td>
+                    <td class="text-[14px]" style="border: 1px solid #3b3b3b;">${data.tgl_terakhir_panen || 'N/A'}</td>
                 </tr>
                 <tr style="background-color: #d4d4d4;">
-                    <td class="text-[14px]" style="border: 1px solid #3b3b3b;"><strong>Target Rotasi</strong></td>
-                    <td class="text-[14px]" style="border: 1px solid #3b3b3b;">${data.target_rotasi || 'N/A'}</td>
-                </tr>
-                <tr>
-                    <td class="text-[14px]" style="border: 1px solid #3b3b3b;"><strong>Tanggal Mulai</strong></td>
-                    <td class="text-[14px]" style="border: 1px solid #3b3b3b;">${data.tgl_mulai || 'N/A'}</td>
-                </tr>
-                <tr style="background-color: #d4d4d4;">
-                    <td class="text-[14px]" style="border: 1px solid #3b3b3b;"><strong>Tanggal Selesai</strong></td>
-                    <td class="text-[14px]" style="border: 1px solid #3b3b3b;">${data.tgl_selesai || 'N/A'}</td>
+                    <td class="text-[14px]" style="border: 1px solid #3b3b3b;"><strong>Total Hari Belum Panen</strong></td>
+                    <td class="text-[14px]" style="border: 1px solid #3b3b3b;">${data.total_hari_belum_panen || 'N/A'}</td>
                 </tr>
             </table>
         </div>
