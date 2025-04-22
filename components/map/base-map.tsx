@@ -249,7 +249,7 @@ export const BaseMap: React.FC<BaseMapProps> = ({
 
             <FeatureGroup>
                 <GeoJSON
-                    key={`${activeMapType}-${JSON.stringify(selected)}-${dateRange?.startDate}-${dateRange?.endDate}-${mapType}`}
+                    key={`${activeMapType}-${JSON.stringify(selected)}-${dateRange?.startDate}-${dateRange?.endDate}-${mapType}-${activityCode}`}
                     data={geoJsonData}
                     style={setColor}
                     filter={filterFeatures}
@@ -265,9 +265,9 @@ export const BaseMap: React.FC<BaseMapProps> = ({
                     // 1. Define the HTML for the text using Tailwind classes
                     //    Customize text color, size, weight, etc. here
                     const iconHtml = `
-    <span class="bg-transparent whitespace-nowrap font-bold text-white font text-sm [-webkit-text-stroke:1px_black]">
-       ${label.content}
-    </span>`;
+                    <span class="bg-transparent whitespace-nowrap font-bold text-white font text-sm">
+                    ${label.content}
+                    </span>`;
 
                     // 2. Create the L.divIcon instance
                     const customTextIcon = L.divIcon({

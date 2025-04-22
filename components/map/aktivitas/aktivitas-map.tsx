@@ -11,18 +11,12 @@ import { getPersentase, getPopUpData } from '@/actions/gis/aktivitas/aktivitas';
 import { useDateRangeStore } from '@/hooks/map-hooks/date-range-store';
 import { useAktivitasMapStore } from '@/hooks/map-hooks/aktivitas-map-store';
 
-const getColorByPercentage = (percentage: number): string => {
-    const range = Object.values(ACTIVITY_COLOR_RANGES).find(
-        range => percentage >= range.min && percentage < range.max
-    );
-    return range?.color || ACTIVITY_COLOR_RANGES.ZERO.color;
-};
+import { useMapStore } from '@/hooks/map-hooks/use-map-store-compat';
 
 const AktivitasMap = () => {
 
     // Use specific stores instead of the monolithic store
-    const { dateRange } = useDateRangeStore();
-    const { activityCode } = useAktivitasMapStore();
+    const { dateRange, activityCode } = useMapStore();
 
     const colorCache = useRef<Map<string, string>>(new Map());
 
@@ -77,6 +71,13 @@ const AktivitasMap = () => {
             return ACTIVITY_COLOR_RANGES.ZERO.color;
         }
     }, [dateRange, activityCode]);
+
+    const getColorByPercentage = (percentage: number): string => {
+        const range = Object.values(ACTIVITY_COLOR_RANGES).find(
+            range => percentage >= range.min && percentage < range.max
+        );
+        return range?.color || ACTIVITY_COLOR_RANGES.ZERO.color;
+    };
 
     // Clear cache when dateRange or activityCode changes
     useEffect(() => {

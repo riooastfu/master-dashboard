@@ -31,6 +31,7 @@ import { getAktivitasByRole } from "@/actions/gis/aktivitas/aktivitas";
 import { useCommonMapStore } from "@/hooks/map-hooks/common-map-store";
 import { useDateRangeStore } from "@/hooks/map-hooks/date-range-store";
 import { useAktivitasMapStore } from "@/hooks/map-hooks/aktivitas-map-store";
+import { useMapStore } from "@/hooks/map-hooks/use-map-store-compat";
 
 interface PerusahaanProps {
     id: string;
@@ -62,7 +63,7 @@ export const AktivitasModal = () => {
     const { data: session } = useSession();
     const { isOpen, activeMapType, onClose, toggleCheckbox, selected } = useCommonMapStore();
     const { setDateRange, updateStylesByDateRange } = useDateRangeStore();
-    const { setActivityCode } = useAktivitasMapStore();
+    const { setActivityCode } = useMapStore();
 
     const [perusahaan, setPerusahaan] = useState<PerusahaanProps[]>([]);
     const [aktivitas, setAktivitas] = useState<AktivitasProps[]>([]);
