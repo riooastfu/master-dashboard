@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import L from 'leaflet';
 import { FeatureGroup, GeoJSON, Marker, Tooltip, LayerGroup, useMap } from 'react-leaflet';
 import { Loader2 } from 'lucide-react';
 import CustomMapContainer from '../leaflet/map';
@@ -186,7 +187,6 @@ export const BaseMap: React.FC<BaseMapProps> = ({
                 setIsFetchingPopup(true);
                 try {
                     const data = await fetchPopupData(feature.properties.COSTCENTER, dateRange);
-                    console.log("data>> ", data);
                     if (data) {
                         // Use the imported renderPopupContent function, with fallback to custom renderer
                         const content = renderPopupContent(
@@ -259,21 +259,36 @@ export const BaseMap: React.FC<BaseMapProps> = ({
             </FeatureGroup>
 
             <LayerGroup>
-                {labelGroups.map((label, index) => (
-                    <Marker
-                        key={`${label.type}-${index}`}
-                        position={label.position}
-                        opacity={0}
-                    >
-                        <Tooltip
-                            permanent
-                            direction="center"
-                            className={`map-label ${label.type}-label`}
-                        >
-                            {label.content}
-                        </Tooltip>
-                    </Marker>
-                ))}
+                {/* --- Mapping over labels to create text markers --- */}
+                {labelGroups.map((label, index) => {
+
+                    // 1. Define the HTML for the text using Tailwind classes
+                    //    Customize text color, size, weight, etc. here
+                    const iconHtml = `
+    <span class="bg-transparent whitespace-nowrap font-bold text-white font text-sm [-webkit-text-stroke:1px_black]">
+       ${label.content}
+    </span>`;
+
+                    // 2. Create the L.divIcon instance
+                    const customTextIcon = L.divIcon({
+                        // IMPORTANT: No wrapper styling from Leaflet needed
+                        className: '',
+                        html: iconHtml,
+                        // IMPORTANT: Adjust [X, Y] anchor based on your font size/style
+                        // for desired positioning relative to the coordinate. [0,0] is top-left.
+                        iconAnchor: [0, 7] // Example: Try adjusting this Y value (and X if needed)
+                    });
+
+                    // 3. Return the Marker using the custom divIcon
+                    return (
+                        <Marker
+                            key={`${label.type}-${index}`}
+                            position={label.position}
+                            icon={customTextIcon} // Use the text icon
+                        // No Tooltip or other children needed here
+                        />
+                    );
+                })} {/* End .map() */}
             </LayerGroup>
         </CustomMapContainer>
     );
